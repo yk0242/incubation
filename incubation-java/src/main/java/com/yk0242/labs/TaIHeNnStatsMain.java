@@ -7,7 +7,7 @@ import com.yk0242.labs.taihenn.TaIHeNnManager;
 
 /**
  * Main class for TaIHeNn suite - for taking stats of occurrences of taihen and hentai. 
- *  (Based on code of TaIHeNnMain.)
+ *  (Based on code of TaIHeNnMain.) 
  * @author yk242
  */
 public class TaIHeNnStatsMain {
