@@ -9,7 +9,7 @@
 
   <name>incubation-java</name>
   <url>https://github.com/yk0242/incubation-java/</url>
-
+<!-- test -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
