@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.yk0242.labs</groupId>
-  <artifactId>taihenn</artifactId>
+  <artifactId>incubation-java</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>taihenn</name>
-  <url>http://maven.apache.org</url>
+  <name>incubation-java</name>
+  <url>https://github.com/yk0242/incubation-java/</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
