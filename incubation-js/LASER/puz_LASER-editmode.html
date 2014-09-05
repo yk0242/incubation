@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<head>
+<title>LASER: edit mode</title>
+<meta name="Author" content="yybtcbk">
+<meta name="Keywords" content="yybtcbk, puzzle, LASER">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=Shift_JIS">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<script type="text/javascript" src="laser.js"></script>
+</head>
+
+<body bgcolor="#DFDFFF" onLoad="resetMaintable(true)">
+<h2>LASER: edit mode</h2>
+
+<a target="_blank" href="https://sites.google.com/site/yybtcbk2/puzzles/laser">English instructions</a>&nbsp;&nbsp;
+<a target="_blank" href="http://yybtcbk.blog13.fc2.com/blog-entry-82.html">説明（日本語）</a>&nbsp;&nbsp;
+<a href="puz_LASER-examples.html">Examples</a>
+<br><br>
+
+<form id="mainform">
+<table id="maintable">
+<tr><td>Please enable JavaScript to run.</td></tr>
+</table>
+<br>
+Number of rows: <input type="text" id="rowstxt" size="2" value="13"><br>
+Number of cols: <input type="text" id="colstxt" size="2" value="19"><br>
+<input type="hidden" id="rows" value="13"><input type="hidden" id="cols" value="19">
+<input type="hidden" id="puzId">
+
+<input type="button" value="reset main table" onClick="resetMaintable(true)">
+<input type="button" value="clear all lasers" onClick="clearLasers()">
+<br>
+
+<input type="button" value="load puzzle" onClick="loadPuzzle(true, 'puzzleBuffer')">
+<input type="button" value="dump puzzle" onClick="dumpPuzzle()">
+<br>
+<textarea id="puzzleBuffer" rows="15" cols="25">
+.3..........1......
+...................
+...................
+...................
+...............1..2
+...................
+.........2.....2...
+...................
+...................
+...................
+...................
+.....4.............
+...................
+</textarea>
+</form>
+<hr>
+<font size="-2">ver 20120831. &copy yybtcbk 2012-2014.</font>
+</body>
+</html>
