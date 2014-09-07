@@ -1,5 +1,8 @@
 package com.yk0242.labs;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +10,7 @@ import com.yk0242.labs.taihenn.TaIHeNnManager;
 
 /**
  * Main class for TaIHeNn suite - for taking stats of occurrences of taihen and hentai. 
- *  (Based on code of TaIHeNnMain.) 
+ *  (Based on code of TaIHeNnMain.)
  * @author yk242
  */
 public class TaIHeNnStatsMain {
@@ -30,15 +33,32 @@ public class TaIHeNnStatsMain {
 	private static List<Integer> hentaiLTO = new ArrayList<Integer>();//keeps track of Letters taken To Occurrence of hentai
 	
 	public static void main(String [ ] args){
-		int nLetters;
+		int nLetters=100000;
 		
 		//initialize thm
 		TaIHeNnManager thm = new TaIHeNnManager();
 		if(!DISPLIST) thm.setNoHistory();//speeds up process and prevents Java heap space error
 		
 		//*** input num of letters to produce
-		nLetters = 1000*1000000/1;//TODO FIXME input num letters to produce
-		                       //NB: console buffer size currently 1000000
+//		nLetters = 1000*1000000/1;//temp input num letters to produce
+//		                       //NB: console buffer size currently 1000000
+		System.out.print("テスト用文字数を入力してください（デフォルト100000）：");
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		try {
+			nLetters = Integer.parseInt(br.readLine());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NumberFormatException e) {
+			//if user name input is empty or NaN, replace by default value
+			nLetters=100000;
+		} finally {
+			try{
+				if(br!=null) br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println();
 		
 		//*** loop thm for nLetters
 		for(int lctr=0; lctr<nLetters; lctr++){

@@ -1,5 +1,9 @@
 package com.yk0242.labs;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 import com.yk0242.labs.taihenn.TaIHeNnManager;
 
 /**
@@ -13,7 +17,7 @@ public class TaIHeNnMain {
 	private static final int LINELEN = 24;//CRLF output every this value (set 0 to disable)
 	
 	public static void main(String [ ] args){
-		String name;
+		String name="ななし";
 		boolean isFirst = true;
 		
 		//initialize thm
@@ -21,7 +25,23 @@ public class TaIHeNnMain {
 		if(FAST) thm.setNoHistory();//speeds up process and prevents Java heap space error
 		
 		//input user name
-		name = "test name";//TODO FIXME input user name
+//		name = "test name";//temp: input user name
+		System.out.print("あなたの名前を入力してください：");
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		try {
+			name = br.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try{
+				if(br!=null) br.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println();
+		//if user name input is empty, replace by default name
+		if(name.equals("")) name="ななし";
 		
 		//loop thm until one of the status flags is true
 		while (thm.isTaihen()==false && thm.isHentai()==false) {
