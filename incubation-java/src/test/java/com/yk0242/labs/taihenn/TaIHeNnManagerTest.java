@@ -60,6 +60,7 @@ public class TaIHeNnManagerTest {
 	/**Test case for isTaihen(). 
 	 * @assert isTaihen() returns expected value properly 10/1000 times.
 	 * @expected isTaihen() returns false whenever advance() doesn't make isTaihen() return true (tautology?)
+	 * @expected when isTaihen() returns false, last four letters' substr of thm.getStr() is not "たいへん"
 	 * @expected when isTaihen() returns true, then last four letters' substr of thm.getStr() is "たいへん"
 	 * @expected when advance() is called after isTaihen() returns true, isTaihen() becomes false again
 	 * @expected optionally displays string representation of arr each time (if DEBUG)
@@ -68,10 +69,14 @@ public class TaIHeNnManagerTest {
 	@Test(timeout=60000)
 	public void isTaihenTest(){
 		for(int i=1; i<=HENTAIHEN_TESTNUM; i++){
+			thm = new TaIHeNnManager();
 			while(!thm.isTaihen()){
 				assertFalse(thm.isTaihen());//redundant tautology, but include for clarity's sake
+				if(thm.getArrLen()>3) assertNotEquals("たいへん",thm.getStr().substring(thm.getArrLen()-4));
 				thm.advance();
 				if(DEBUG) System.out.println(thm.getStr());
+//				System.out.println(thm.isTaihen());//DEBUG
+//				System.out.println(thm.taihenCtr);//DEBUG
 			}
 			assertTrue(thm.isTaihen());//redundant tautology, but include for clarity's sake
 			assertEquals("たいへん",thm.getStr().substring(thm.getArrLen()-4));
@@ -86,6 +91,7 @@ public class TaIHeNnManagerTest {
 	/**Test case for isHentai(). 
 	 * @assert isHentai() returns expected value properly 10/1000 times.
 	 * @expected isHentai() returns false whenever advance() doesn't make thm.hentaiCtr==4
+	 * @expected when isHentai() returns false, last four letters' substr of thm.getStr() is not "へんたい"
 	 * @expected when isHentai() returns true, then last four letters' substr of thm.getStr() is "へんたい"
 	 * @expected when advance() is called after isHentai() returns true, isHentai() becomes false again
 	 * @expected optionally displays string representation of arr each time (if DEBUG)
@@ -93,8 +99,10 @@ public class TaIHeNnManagerTest {
 	@Test(timeout=60000)
 	public void isHentaiTest(){
 		for(int i=1; i<=HENTAIHEN_TESTNUM; i++){
+			thm = new TaIHeNnManager();
 			while(!thm.isHentai()){
 				assertFalse(thm.isHentai());//redundant tautology, but include for clarity's sake
+				if(thm.getArrLen()>3) assertNotEquals("へんたい",thm.getStr().substring(thm.getArrLen()-4));
 				thm.advance();
 				if(DEBUG) System.out.println(thm.getStr());
 			}
@@ -187,6 +195,7 @@ public class TaIHeNnManagerTest {
 	/**Test case for isTaihen() in noHistory mode 10/1000 times. 
 	 * @assert isTaihen() returns expected value properly in noHistory mode
 	 * @expected isTaihen() returns false whenever advance() doesn't make isTaihen() return true (tautology?)
+	 * @expected when isTaihen() returns false, last four letters' history of getLastChar() is not "たいへん"
 	 * @expected when isTaihen() returns true, then last four letters' history of getLastChar() is "たいへん"
 	 * @expected when advance() is called after isTaihen() returns true, isTaihen() becomes false again
 	 * @expected optionally displays string representation of arr (if DEBUG)
@@ -195,10 +204,12 @@ public class TaIHeNnManagerTest {
 	@Test(timeout=10000)
 	public void isTaihenNoHistoryTest(){
 		for(int i=1; i<=HENTAIHEN_TESTNUM; i++){
+			thm = new TaIHeNnManager();
 			String lastfour="abcd";//any four letters should do
 			thm.setNoHistory();
 			while(!thm.isTaihen()){
 				assertFalse(thm.isTaihen());//redundant tautology, but include for clarity's sake
+				assertNotEquals("たいへん",lastfour);
 				thm.advance();
 				lastfour = lastfour.substring(1)+thm.getLastChar();
 				if(DEBUG) System.out.print(thm.getLastChar());
@@ -218,6 +229,7 @@ public class TaIHeNnManagerTest {
 	/**Test case for isHentai() in noHistory mode 10/1000 times. 
 	 * @assert isHentai() returns expected value properly in noHistory mode
 	 * @expected isHentai() returns false whenever advance() doesn't make thm.hentaiCtr==4
+	 * @expected when isHentai() returns false, last four letters' history of getLastChar() is not "へんたい"
 	 * @expected when isHentai() returns true, then last four letters' history of getLastChar() is "へんたい"
 	 * @expected when advance() is called after isHentai() returns true, isHentai() becomes false again
 	 * @expected optionally displays string representation of arr (if DEBUG)
@@ -225,10 +237,12 @@ public class TaIHeNnManagerTest {
 	@Test(timeout=10000)
 	public void isHentaiNoHistoryTest(){
 		for(int i=1; i<=HENTAIHEN_TESTNUM; i++){
+			thm = new TaIHeNnManager();
 			String lastfour="abcd";//any four letters should do
 			thm.setNoHistory();
 			while(!thm.isHentai()){
 				assertFalse(thm.isHentai());//redundant tautology, but include for clarity's sake
+				assertNotEquals("へんたい",lastfour);
 				thm.advance();
 				lastfour = lastfour.substring(1)+thm.getLastChar();
 				if(DEBUG) System.out.print(thm.getLastChar());

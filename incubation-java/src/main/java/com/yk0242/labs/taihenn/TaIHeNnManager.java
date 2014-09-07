@@ -17,7 +17,7 @@ public class TaIHeNnManager {
 	/* constant string */
 	private static final char[] REPSTR = {'た','い','へ','ん'};//replacement String
 	/* internal vars */
-	Random rng = new Random();//Random Number Generator
+	private Random rng = new Random();//Random Number Generator
 	private List<Integer> arr; //list of Ints representing the output char String
 	private int taihenCtr; //keeps track of occurrence of たいへん string
 	private int hentaiCtr; //keeps track of occurrence of へんたい string
@@ -65,6 +65,8 @@ public class TaIHeNnManager {
 		//if expected char appears, then ctr++; else reset ctr
 		if(i == taihenCtr) taihenCtr++;
 		else taihenCtr = 0;
+		//fix bug #17 - if counter reset when たた appears, taihenCtr should be 1. 
+		if(i == 0) taihenCtr=1;
 		
 		//*** process hentaiCtr
 		//if ctr is full and advance is called, reset ctr
@@ -72,6 +74,8 @@ public class TaIHeNnManager {
 		//if expected char appears, then ctr++; else reset ctr
 		if(i == (hentaiCtr+repStrLen/2)%repStrLen ) hentaiCtr++;
 		else hentaiCtr = 0;
+		//fix bug #17 - if counter reset when へへ appears, hentaiCtr should be 1. 
+		if(i == (repStrLen/2)%repStrLen) hentaiCtr=1;
 		
 		//return this to allow for method chaining
 		return this;
