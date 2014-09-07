@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <name>incubation-java</name>
-  <url>https://github.com/yk0242/incubation-java/</url>
+  <url>https://github.com/yk0242/incubation/tree/master/incubation-java</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
