@@ -131,7 +131,7 @@ public class TaIHeNnManager {
 	 * gets String representing current arr
 	 * @return String representing current arr
 	 */
-	public String getStr(){ //TODO hide
+	String getStr(){
 		StringBuilder sb = new StringBuilder();
 		for(int ctr=0; ctr<arr.size(); ctr++){
 			int i = arr.get(ctr);

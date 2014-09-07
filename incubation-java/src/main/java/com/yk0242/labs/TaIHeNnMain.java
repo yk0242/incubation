@@ -57,7 +57,10 @@ public class TaIHeNnMain {
 			
 			//advance thm by one unit, and display last char
 			System.out.print(thm.advance().getLastChar());
-			if(DEBUG) System.out.println(" / "+thm.getStr());//TODO comment out when privatizing getStr()
+			if(DEBUG) {
+//				System.out.println(" / "+thm.getStr());//comment out when privatizing getStr()
+				System.out.println(" / [disabled]");  //switch on for hiding THM.getStr()
+			}
 		}
 		
 		//output result
