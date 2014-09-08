@@ -58,10 +58,10 @@ var TaIHeNnManager = function(){
 		//if ctr is full and advance is called, reset ctr
 		if(hentaiCtr == repStrLen) hentaiCtr = 0;
 		//if expected char appears, then ctr++; else reset ctr
-		if(rnd == hentaiCtr) hentaiCtr++;
+		if(rnd == (hentaiCtr+repStrLen/2)%repStrLen ) hentaiCtr++;
 		else hentaiCtr = 0;
 		//!NB if counter reset when へへ appears, hentaiCtr should be 1. 
-		if(rnd == 0) hentaiCtr=1;
+		if(rnd == repStrLen/2) hentaiCtr=1;
 		
 //		window.alert("ctr is "+ctr+"\nlastChar is "+lastChar);//DEBUG
 		
