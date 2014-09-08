@@ -75,7 +75,7 @@ public class TaIHeNnManager {
 		if(i == (hentaiCtr+repStrLen/2)%repStrLen ) hentaiCtr++;
 		else hentaiCtr = 0;
 		//fix bug #17 - if counter reset when へへ appears, hentaiCtr should be 1. 
-		if(i == (repStrLen/2)%repStrLen) hentaiCtr=1;
+		if(i == repStrLen/2) hentaiCtr=1;
 		
 		//return this to allow for method chaining
 		return this;
