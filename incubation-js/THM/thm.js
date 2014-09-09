@@ -166,17 +166,46 @@ function loopThm(thm, twait, isFirst){
 function ending(thm){
 	//*** output result
 	appout("\n<br><br>\n");
-	var str = "";
-	str+="<span class=\"tht-result\">";
-	str+=thm.getUsername();
-	str+="さんは";
-	if(thm.isTaihen()) str+="たいへん";
-	else if(thm.isHentai()) str+="へんたい";
+	
+	//formulate results string so as to be reusable later for tweet button
+	var resstr1 = "";
+	var resstr2 = "";
+	resstr1+=thm.getUsername();
+	resstr1+="さんは";
+	if(thm.isTaihen()) resstr1+="たいへん";
+	else if(thm.isHentai()) resstr1+="へんたい";
 	else window.alert("内部エラーです。管理人を連絡してください。");//JIC
-	str+="です！<br>\n（";
-	str+=thm.getCtr();
-	str+="文字で結果が出ました。）</span>";
-	appout(str);
+	resstr1+="です！\n";
+	resstr2+="（";
+	resstr2+=thm.getCtr();
+	resstr2+="文字で結果が出ました。）\n\n";
+	
+	appout("<span class=\"tht-result\">"+resstr1+"<br>"+resstr2+"</span><br><br>\n");
+	
+	//*** append tweet button
+	appout("<span id=\"restwbtn\">結果をツイートする： </span>\n");
+	
+	var twtxt = resstr1 + resstr2 + "たいへんたいジェネレーター\n";
+	
+	var twa = document.createElement("a");
+	twa.className = "twitter-share-button";
+	twa.href = "http://twitter.com/share";
+	
+	//HACK: need to treat hyphenated properties separately
+	var DATAURL = "https://googledrive.com/host/0B9f3hv6KkjXcS19ZMmxxdGE5bUE/THM/tht-gen.html";
+	if(twa.setProperty){
+		twa.setProperty("data-url", DATAURL, null);
+		twa.setProperty("data-text", twtxt, null);
+	}else{
+		twa.setAttribute("data-url", DATAURL);
+		twa.setAttribute("data-text", twtxt)
+	}
+	
+	document.getElementById("restwbtn").appendChild(twa);
+	
+	//HACK: calls twitterAPI function directly; could change?
+	twttr.widgets.load();
+	
 	isRunning=false;
 }
 

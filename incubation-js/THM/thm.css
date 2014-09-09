@@ -1,18 +1,24 @@
 .tht-text{
-font-weight:bold;
-color:#191970;
+	font-weight:bold;
+	color:#191970;
 }
 
 .tht-result{
-font-size:x-large;
-font-weight:bold;
-color:#3355FF;
+	font-size:x-large;
+	font-weight:bold;
+	color:#3355FF;
+}
+
+#restwbtn{
+	font-size:large;
+	font-weight:normal;
+	color:#333333;
 }
 
 .smallf{
-font-size:x-small;
+	font-size:x-small;
 }
 
 .label{
-font-weight:bold;
+	font-weight:bold;
 }
