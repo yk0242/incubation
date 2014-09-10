@@ -164,7 +164,7 @@ function loopThm(thm, twait, isFirst){
 	setTimeout(function(){loopThm(thm, twait, false)}, twait);
 }
 
-//*****pull out ending for use with setTimeout - called when isHentai or isTaihen
+//*****pull out ending - called when isHentai or isTaihen
 function ending(thm){
 	//*** output result
 	appout("\n<br><br>\n");
@@ -200,7 +200,7 @@ function ending(thm){
 		twa.setProperty("data-text", twtxt, null);
 	}else{
 		twa.setAttribute("data-url", DATAURL);
-		twa.setAttribute("data-text", twtxt)
+		twa.setAttribute("data-text", twtxt);
 	}
 	
 	document.getElementById("restwbtn").appendChild(twa);
