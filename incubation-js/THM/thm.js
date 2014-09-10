@@ -1,4 +1,4 @@
-//thm.js - main javascript for running the TaIHeNnTaI generator suite.
+//thm.js - main JavaScript for running the TaIHeNnTaI generator suite.
 //          call runThm() to start single process. 
 //
 // specs memo: html must have variable holders with the following ids:
@@ -6,7 +6,8 @@
 //   output   : div/span area where output will be displayed
 //   delim    : delimiter to use when displaying output
 // 
-// 2014.09.08 yybtcbk ver 1.0 completed.
+// 2014.09.08 yybtcbk ver 2014.09.08 init ver completed.
+// 2014.09.09 yybtcbk ver 2014.09.09b added twitter button
 
 //***************************
 //****** global consts ******
@@ -19,6 +20,7 @@
 //******* global vars *******
 //***************************
 var isRunning = false; //flag to signify a running thm loop
+//ideally, I would make THM singleton, but I can't be bothered... 
 
 //***************************
 //******** "Classes" ********
@@ -32,7 +34,7 @@ var TaIHeNnManager = function(){
 	var taihenCtr = 0;
 	var hentaiCtr = 0;
 	var ctr = 0;
-	var username = "";
+	var userName = "";
 	var delim = ", ";
 	
 	//======= privileged functions =======
@@ -64,7 +66,6 @@ var TaIHeNnManager = function(){
 		if(rnd == repStrLen/2) hentaiCtr=1;
 		
 //		window.alert("ctr is "+ctr+"\nlastChar is "+lastChar);//DEBUG
-		
 		return this;//return self to allow for chained calls
 	}
 	//***** isTaihen
@@ -86,13 +87,13 @@ var TaIHeNnManager = function(){
 //		window.alert(isNaN(ctr));//DEBUG
 		return ctr;
 	}
-	//***** setUsername
-	this.setUsername = function(name){
-		username = name;
+	//***** setUserName
+	this.setUserName = function(name){
+		userName = name;
 	}
-	//***** getUsername
-	this.getUsername = function(){
-		return username;
+	//***** getUserName
+	this.getUserName = function(){
+		return userName;
 	}
 	//***** setDelim
 	this.setDelim = function(dl){
@@ -109,7 +110,7 @@ TaIHeNnManager.REPSTR=["た","い","へ","ん"];
 //*************************
 //******* functions *******
 //*************************
-//***** main function runThm()
+//***** main function runThm() - to be called from html
 function runThm(){
 	//prevent multiple instances from simultaneously running
 	if(isRunning) return;
@@ -124,12 +125,12 @@ function runThm(){
 	//*** set user name
 	var name = document.getElementById("username").value;
 	if(name == "") name = "ななし";
-	thm.setUsername(name);
+	thm.setUserName(name);
 	
 	//*** set delimiter
 	thm.setDelim(document.getElementById("delim").value);
 	
-	//*** set timeout wait
+	//*** set (initial) timeout wait
 	var twait = 333;
 	
 	//*** loop thm until one of the status flags is true
@@ -141,28 +142,29 @@ function runThm(){
 //***** pull out advancement loop for use with setTimeout
 function loopThm(thm, twait, isFirst){
 //	if(thm.getCtr()<10)window.alert("enter loop");//DEBUG
-	//exit thm loop if one of the status flags is true
+	//call ending and exit thm loop if one of the status flags is true
 	if(thm.isTaihen()==true || thm.isHentai()==true){
 		ending(thm);
 		return;
 	}
-	//speed up display at given positions
-		if(thm.getCtr()==12) twait*=0.2;
-		if(thm.getCtr()==100) twait*=0.5;
-		if(thm.getCtr()==200) twait*=0.5;
-		if(thm.getCtr()==256) twait*=0.5;
-	
 	//output delimiter unless this is the first call
 	if(!isFirst) appout(thm.getDelim());
 	
-	//advance thm by one unit, and display last char, after twait msecs wait
+	//advance thm by one unit, and display last char
 	appout(thm.advance().getLastChar());
-	//recursively call loopThm
+	
+	//speed up display at given intervals
+	if(thm.getCtr()==7) twait*=0.2;
+	if(thm.getCtr()==50) twait*=0.5;
+	if(thm.getCtr()==128) twait*=0.5;
+	if(thm.getCtr()==256) twait*=0.5;
+	
+	//recursively call loopThm with twait waiting time
 //	if(thm.getCtr()<10)window.alert("before next loop");//DEBUG
 	setTimeout(function(){loopThm(thm, twait, false)}, twait);
 }
 
-//*****pull out ending for use with setTimeout
+//*****pull out ending for use with setTimeout - called when isHentai or isTaihen
 function ending(thm){
 	//*** output result
 	appout("\n<br><br>\n");
@@ -170,7 +172,7 @@ function ending(thm){
 	//formulate results string so as to be reusable later for tweet button
 	var resstr1 = "";
 	var resstr2 = "";
-	resstr1+=thm.getUsername();
+	resstr1+=thm.getUserName();
 	resstr1+="さんは";
 	if(thm.isTaihen()) resstr1+="たいへん";
 	else if(thm.isHentai()) resstr1+="へんたい";
@@ -180,9 +182,9 @@ function ending(thm){
 	resstr2+=thm.getCtr();
 	resstr2+="文字で結果が出ました。）\n\n";
 	
-	appout("<span class=\"tht-result\">"+resstr1+"<br>"+resstr2+"</span><br><br>\n");
+	appout("<span class=\"tht-result\">\n"+resstr1+"<br>"+resstr2+"</span><br><br>\n");
 	
-	//*** append tweet button
+	//*** append results tweet button
 	appout("<span id=\"restwbtn\">結果をツイートする： </span>\n");
 	
 	var twtxt = resstr1 + resstr2 + "たいへんたいジェネレーター\n";
@@ -203,13 +205,14 @@ function ending(thm){
 	
 	document.getElementById("restwbtn").appendChild(twa);
 	
-	//HACK: calls twitterAPI function directly; could change?
+	//HACK: call twitterAPI function directly; could change?
 	twttr.widgets.load();
 	
+	//turn off active flag to enable user to re-run app
 	isRunning=false;
 }
 
-//***** utilitary function to append to output
+//***** utility function to append to output
 function appout(str){
 	document.getElementById("output").innerHTML += str;
 }
