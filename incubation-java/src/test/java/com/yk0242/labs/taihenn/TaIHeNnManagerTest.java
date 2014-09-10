@@ -167,7 +167,6 @@ public class TaIHeNnManagerTest {
 	
 	/**Test case for getLastChar() in noHistory mode. 
 	 * @assert getLastChar() gets last char string properly (10 times) in noHistory mode
-	 *  ( depends on getStr() working properly )
 	 * @expected getLastChar() called before advance() called throws an IndexOutOfBoundsException
 	 * @expected getLastChar() gets 'た' or 'い' or 'へ' or 'ん' (10 times)
 	 * @expected optionally displays string representation of arr (if DEBUG)
