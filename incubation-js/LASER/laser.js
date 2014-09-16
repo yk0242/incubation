@@ -1,4 +1,4 @@
-//laser.js - main javascript for running the LASER puzzle suite.
+﻿//laser.js - main javascript for running the LASER puzzle suite.
 //
 // 2012.08.31 yybtcbk ver 1.0 completed.
 //
