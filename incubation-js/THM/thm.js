@@ -211,6 +211,9 @@ function ending(thm){
 	//HACK: call twitterAPI function directly; could change?
 	twttr.widgets.load();
 	
+	//change display for start button to "restart"
+	document.getElementById("startbutton").value="再実行";
+	
 	//turn off active flag to enable user to re-run app
 	isRunning=false;
 }
