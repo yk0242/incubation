@@ -131,7 +131,7 @@ function runThm(){
 	thm.setDelim(document.getElementById("delim").value);
 	
 	//*** set (initial) timeout wait
-	var twait = 333;
+	var twait = 136; //fallback jic element not displayed
 	
 	//*** loop thm until one of the status flags is true
 	loopThm(thm, twait, true);
@@ -153,11 +153,14 @@ function loopThm(thm, twait, isFirst){
 	//advance thm by one unit, and display last char
 	appout(thm.advance().getLastChar());
 	
-	//speed up display at given intervals
-	if(thm.getCtr()==7) twait*=0.2;
-	if(thm.getCtr()==50) twait*=0.5;
-	if(thm.getCtr()==128) twait*=0.5;
-	if(thm.getCtr()==256) twait*=0.5;
+//	//speed up display at given intervals
+//	if(thm.getCtr()==7) twait*=0.2;
+//	if(thm.getCtr()==50) twait*=0.5;
+//	if(thm.getCtr()==128) twait*=0.5;
+//	if(thm.getCtr()==256) twait*=0.5;
+	//get display speed interactively from range input
+	twait = document.getElementById("speedrange").value;
+	twait *= twait/12;
 	
 	//recursively call loopThm with twait waiting time
 //	if(thm.getCtr()<10)window.alert("before next loop");//DEBUG
