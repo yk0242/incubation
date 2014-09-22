@@ -8,10 +8,11 @@
 <meta http-equiv="Content-Script-Type" content="text/javascript">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <script type="text/javascript" language="JavaScript" src="laser.js"></script>
+<script type="text/javascript" language="JavaScript" src="laser_problems.js"></script>
 <link rel="stylesheet" href="laser.css" TYPE="text/css">
 </head>
 
-<body bgcolor="#DFDFFF" onLoad="loadPuzzle(false, mainform.puzzleSelect.value)">
+<body bgcolor="#DFDFFF" onLoad="initLoadLaserSet();">
 <h2>LASER: examples</h2>
 
 <a target="_blank" href="https://sites.google.com/site/yybtcbk2/puzzles/laser">English instructions</a>&nbsp;&nbsp;
@@ -20,16 +21,13 @@
 <br><br>
 
 <form id="mainform">
-<select id="puzzleSelect">
-  <option value="ex001">Example Problem 1 (easy)</option>
-  <option value="ex002">Example Problem 2 (a bit harder)</option>
-  <option value="ex003">temp Problem 3</option>
-</select> 
+<select id="puzzleSelect"></select> 
 <input type="button" value="load puzzle" onClick="loadPuzzle(false, puzzleSelect.value)">
 <input type="button" value="clear all lasers" onClick="clearLasers()">
 <input type="button" value="check answer" onClick="checkAnswer(puzId.value)">
 <br>
-<div id="authorDisplay"></div>
+<div id="titleAuthorDisplay"></div>
+<span style="font-size:x-small;"><br></span>
 <table id="maintable">
 <tr><td>Please enable JavaScript to run.</td></tr>
 </table>
@@ -37,46 +35,6 @@
 <input type="hidden" id="rowstxt"><input type="hidden" id="colstxt">
 <input type="hidden" id="rows"><input type="hidden" id="cols">
 <input type="hidden" id="puzId">
-<textarea id="ex001" style="display:none;">
-.3..........1......
-...................
-...................
-...................
-...............1..2
-...................
-.........2.....2...
-...................
-...................
-...................
-...................
-.....4.............
-...................
-</textarea>
-<input type="hidden" id="ex001au" value="yybtcbk">
-<input type="hidden" id="ex001a" value="0x0x0x0xxxxxxxxxx0x/x0xxx0x0xx0x0">
-<textarea id="ex002" style="display:none;">
-....................
-...2.........11..2..
-.............11..2.1
-....................
-.......1..3.........
-....................
-....................
-1...................
-1................1..
-....................
-....................
-.......1............
-</textarea>
-<input type="hidden" id="ex002au" value="yybtcbk">
-<input type="hidden" id="ex002a" value="x0xx0xxxx0x0xxxx0xxx/0xx0xxxxxx0x">
-<textarea id="ex003" style="display:none;">
-.1...
-.....
-.1..2
-.....
-</textarea>
-<input type="hidden" id="ex003a" value="xxx0x/x0xx">
 </form>
 
 <hr>
