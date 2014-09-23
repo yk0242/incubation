@@ -1,5 +1,53 @@
-﻿.laser-text{
-font-weight:bold;
-color:#3355FF;
-text-align:center;
+.laser-text{ 
+	font-weight:bold;
+	color:#3377FF;
+	text-align:center;
 }
+.laser-onsrc-text{
+	font-weight:bold;
+	color:#3333FF;
+}
+.laser-offsrc-text{
+	font-weight:bold;
+	color:#333333;
+}
+
+.laser-on-button{
+	width:20px;
+	padding:0px;
+	font-weight:bold;
+	color:#3333FF;
+	background-color:#CCCCFF;
+}
+.laser-off-button{
+	width:20px;
+	padding:0px;
+	font-weight:bold;
+	color:#000000;
+	background-color:#AAAAAA;
+}
+
+table{
+	border:3px solid #555555;
+	border-collapse:collapse;
+}
+td{
+	border:1px solid #777777;
+	padding:3px;
+}
+.laser-src-td-e,.laser-src-td-o,.laser-on-td-e,.laser-on-td-o,.laser-off-td-e,.laser-off-td-o{
+	border:1px solid #003366;
+}
+
+.laser-tl-td   { background-color:#777777; }
+.laser-src-td-e{ background-color:#CCCCCC; }
+.laser-src-td-o{ background-color:#BBBBBB; }
+.laser-on-td-e { background-color:#B0B0C7; }
+.laser-on-td-o { background-color:#A0A0B7; }
+.laser-off-td-e{ background-color:#B0B0B0; }
+.laser-off-td-o{ background-color:#A0A0A0; }
+.laser-main-td-ee { background-color:#DADAFA; }
+.laser-main-td-oe { background-color:#D0D0F0; }
+.laser-main-td-oo { background-color:#C0C0E0; }
+.laser-main-td-on { background-color:#3333FF !important; }
+.laser-main-td-off{ background-color:#000000 !important; }

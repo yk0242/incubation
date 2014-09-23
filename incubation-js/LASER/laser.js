@@ -2,18 +2,17 @@
 //
 // 2012.08.31 yybtcbk ver 1.0 completed.
 // 2014.09.22 yybtcbk altered to externalize puzzle contents to laser_problems.js
-//
+// 2014.09.23 yybtcbk altered to externalize some styling to css file
+// 
 // specs memo: html must have variable holders with the following ids:
 //   rows, cols, rowtxts, colstxt, puzId
 
 //*************************
 //******* global vars *****
 //*************************
-var onColor = "#3333FF";
-var offColor = "#000000";
 var onLbl = "O";
 var offLbl = "X";
-var indetLbl = "&nbsp;&nbsp;";
+var indetLbl = "&nbsp;&nbsp;&nbsp;";
 //laser indicators: 1:on, 0:off, -1:indet
 var rowsOn=[];
 var colsOn=[];
@@ -92,6 +91,7 @@ function resetMaintable(editable){
 		//leave first three cells empty
 		for (var i=0; i<3; i++){
 			var cell = document.createElement("td");
+			cell.className="laser-tl-td";
 			row.appendChild(cell);
 		}
 		
@@ -99,12 +99,18 @@ function resetMaintable(editable){
 		for (var i=0; i <cols; i++){
 			var cell = document.createElement("td");
 			if (j==-3){
-				cell.innerHTML='<input type="button" style="width:20px;" id="col_'+i+'_on" value="'+onLbl+'" onClick="colOn('+i+')">';
+				if(i%2==0) cell.className="laser-on-td-e";
+				else cell.className="laser-on-td-o";
+				cell.innerHTML='<input type="button" class="laser-on-button" id="col_'+i+'_on" value="'+onLbl+'" onClick="colOn('+i+')">';
 			}
 			else if(j==-2){
-				cell.innerHTML='<input type="button" style="width:20px;" id="col_'+i+'_off" value="'+offLbl+'" onClick="colOff('+i+')">';
+				if(i%2==0) cell.className="laser-off-td-e";
+				else cell.className="laser-off-td-o";
+				cell.innerHTML='<input type="button" class="laser-off-button" id="col_'+i+'_off" value="'+offLbl+'" onClick="colOff('+i+')">';
 			}
 			else{
+				if(i%2==0) cell.className="laser-src-td-e";
+				else cell.className="laser-src-td-o";
 				cell.innerHTML='<div id="col_'+i+'_laser">'+indetLbl+'</div>';
 				cell.setAttribute("align","center");
 			}
@@ -120,14 +126,20 @@ function resetMaintable(editable){
 		
 		//place on/off buttons and laser pointer in first two cols
 		var cell_on = document.createElement("td");
-		cell_on.innerHTML='<input type="button" style="width:20px;" id="row_'+j+'_on" value="'+onLbl+'" onClick="rowOn('+j+')">';
+		if(j%2==0) cell_on.className="laser-on-td-e";
+		else cell_on.className="laser-on-td-o";
+		cell_on.innerHTML='<input type="button" class="laser-on-button" id="row_'+j+'_on" value="'+onLbl+'" onClick="rowOn('+j+')">';
 		row.appendChild(cell_on);
 		var cell_off = document.createElement("td");
-		cell_off.innerHTML='<input type="button" style="width:20px;" id="row_'+j+'_off" value="'+offLbl+'" onClick="rowOff('+j+')">';
+		if(j%2==0) cell_off.className="laser-off-td-e";
+		else cell_off.className="laser-off-td-o";
+		cell_off.innerHTML='<input type="button" class="laser-off-button" id="row_'+j+'_off" value="'+offLbl+'" onClick="rowOff('+j+')">';
 		row.appendChild(cell_off);
 		
 		//place laser pointers in next col
 		var cell_laser = document.createElement("td");
+		if(j%2==0) cell_laser.className="laser-src-td-e";
+		else cell_laser.className="laser-src-td-o";
 		cell_laser.innerHTML='<div id="row_'+j+'_laser">'+indetLbl+'</div>';
 		cell_laser.setAttribute("align","center");
 		row.appendChild(cell_laser);
@@ -138,6 +150,13 @@ function resetMaintable(editable){
 			if(editable) cell.innerHTML='<input type="textbox" style="width:20px;">';
 			else cell.innerHTML='&nbsp;';
 			cell.setAttribute("id","cell_"+i+"_"+j);
+			if(j%2==0){
+				if(i%2==0) cell.className="laser-main-td-ee";
+				else cell.className="laser-main-td-oe";
+			}else{
+				if(i%2==0) cell.className="laser-main-td-oe";
+				else cell.className="laser-main-td-oo";
+			}
 			row.appendChild(cell);
 		}
 		tblBody.appendChild(row);
@@ -145,8 +164,8 @@ function resetMaintable(editable){
 	tbl.appendChild(tblBody);
 	
 	//set table attribs here
-	tbl.setAttribute("border", "2");
-	tbl.setAttribute("cellpadding", "5");
+//	tbl.setAttribute("border", "2px");
+//	tbl.setAttribute("cellpadding", "2px");
 	tbl.setAttribute("id", "maintable");
 	
 	//replace maintable
@@ -214,12 +233,13 @@ function rowOn(row){
 	//turn laser pointer on
 	rowsOn[row]=1;
 	var laser = document.getElementById("row_"+row+"_laser");
-	laser.innerHTML=onLbl;
+	laser.innerHTML='<span class="laser-onsrc-text">'+onLbl+'</span>';
 	
 	//fill grid accordingly
 	for(i=0; i<cols; i++){
 		var cell = document.getElementById("cell_"+i+"_"+row);
-		cell.setAttribute("bgColor", onColor);
+		cell.className=cell.className.replace(/laser-main-td-off/g,'');
+		cell.className+=" laser-main-td-on";
 	}
 }
 
@@ -229,12 +249,13 @@ function colOn(col){
 	//turn laser pointer on
 	colsOn[col]=1;
 	var laser = document.getElementById("col_"+col+"_laser");
-	laser.innerHTML=onLbl;
+	laser.innerHTML='<span class="laser-onsrc-text">'+onLbl+'</span>';
 	
 	//fill grid accordingly
 	for(j=0; j<rows; j++){
 		var cell = document.getElementById("cell_"+col+"_"+j);
-		cell.setAttribute("bgColor", onColor);
+		cell.className=cell.className.replace(/laser-main-td-off/g,'');
+		cell.className+=" laser-main-td-on";
 	}
 }
 
@@ -253,7 +274,8 @@ function rowOff(row){
 			var cell = document.getElementById("cell_"+i+"_"+row);
 			//turn cell clear iff col laser is not on
 			if(colsOn[i]!=1){
-				cell.removeAttribute("bgColor");
+				cell.className=cell.className.replace(/laser-main-td-on/g,'');
+				cell.className=cell.className.replace(/laser-main-td-off/g,'');
 			}
 		}
 	}
@@ -261,18 +283,20 @@ function rowOff(row){
 	//else switch the laser value to off
 	else{
 		rowsOn[row]=0;
-		laser.innerHTML=offLbl;
+		laser.innerHTML='<span class="laser-offsrc-text">'+offLbl+'</span>';
 		
 		//fill grid accordingly
 		for(i=0; i<cols; i++){
 			var cell = document.getElementById("cell_"+i+"_"+row);
 			//turn cell dark iff col laser is off
 			if(colsOn[i]==0){
-				cell.setAttribute("bgColor", offColor);
+				cell.className=cell.className.replace(/laser-main-td-on/g,'');
+				cell.className+=" laser-main-td-off";
 			}
 			//turn cell indeterminate if col laser is indeterminate
 			if(colsOn[i]==-1){
-				cell.removeAttribute("bgColor");
+				cell.className=cell.className.replace(/laser-main-td-on/g,'');
+				cell.className=cell.className.replace(/laser-main-td-off/g,'');
 			}
 		}
 	}
@@ -293,7 +317,8 @@ function colOff(col){
 			var cell = document.getElementById("cell_"+col+"_"+j);
 			//turn cell clear iff row laser is not on
 			if(rowsOn[j]!=1){
-				cell.removeAttribute("bgColor");
+				cell.className=cell.className.replace(/laser-main-td-on/g,'');
+				cell.className=cell.className.replace(/laser-main-td-off/g,'');
 			}
 		}
 	}
@@ -301,18 +326,20 @@ function colOff(col){
 	//else switch the laser value to off
 	else{
 		colsOn[col]=0;
-		laser.innerHTML=offLbl;
+		laser.innerHTML='<span class="laser-offsrc-text">'+offLbl+'</span>';
 		
 		//fill grid accordingly
 		for(j=0; j<rows; j++){
 			var cell = document.getElementById("cell_"+col+"_"+j);
 			//turn cell dark iff row laser is off
 			if(rowsOn[j]==0){
-				cell.setAttribute("bgColor", offColor);
+				cell.className=cell.className.replace(/laser-main-td-on/g,'');
+				cell.className+=" laser-main-td-off";
 			}
 			//turn cell indeterminate if row laser is indeterminate
 			if(rowsOn[j]==-1){
-				cell.removeAttribute("bgColor");
+				cell.className=cell.className.replace(/laser-main-td-on/g,'');
+				cell.className=cell.className.replace(/laser-main-td-off/g,'');
 			}
 		}
 	}
@@ -337,7 +364,9 @@ function clearLasers(){
 		
 		//clear grid row
 		for(i=0; i<cols; i++){
-			document.getElementById("cell_"+i+"_"+j).removeAttribute("bgColor");
+			var cell = document.getElementById("cell_"+i+"_"+j);
+			cell.className=cell.className.replace(/laser-main-td-on/g,'');
+			cell.className=cell.className.replace(/laser-main-td-off/g,'');
 		}
 	}
 }
