@@ -34,7 +34,6 @@ function setLaserProbs(){ //to be called from load() in laser.js
 	lp = new LaserProblem();
 	lp.id = "divider";
 	lp.text = "-------------------- v EASY v --------------------";
-	lp.content = "0";
 	laserProbsArr.push(lp);
 	
 	lp = new LaserProblem();
