@@ -18,6 +18,10 @@ var rowsOn=[];
 var colsOn=[];
 //LASER problem set - to be set from laser_problems.js
 var laserProbsArr = [];
+//starting Date object for LASER timer counter
+var startDate = new Date();
+//var for holding timer setInterval
+var timerVar=null;
 
 //*************************************
 //***** LASER Problems object def *****
@@ -66,7 +70,9 @@ function getPuzzleIndex(puzzleId){
 	return pind;
 }
 
-//***** resets main table - swipes contents & lasers and sets new table of size rowstxt and colstxt
+//***** resets main table - 
+// swipes contents & lasers and sets new table of size rowstxt and colstxt
+// also resets timer
 function resetMaintable(editable){
 	var maintable = document.getElementById("maintable");
 	var rows = document.getElementById("rowstxt").value;
@@ -170,8 +176,11 @@ function resetMaintable(editable){
 	
 	//replace maintable
 	maintable.parentNode.replaceChild(tbl,maintable);
+	
+	//reset timer
+	resetTimer();
+	updateTimer();//zero down timer display
 }
-
 
 //***** loads specified puzzle in solve or edit mode
 function loadPuzzle(editable, puzzleId){
@@ -449,7 +458,13 @@ function checkAnswer(puzzleId){
 	//display result
 	if(check==-1) alert(indetAlertStr);
 	else if(check==0) alert(ngAlertStr);
-	else if(check==1) alert(okAlertStr);
+	else if(check==1){
+		clearInterval(timerVar);
+		timerVar = null;
+		updateTimer();
+		dispResults();
+		alert(okAlertStr);
+	}
 }
 
 //***** load puzzle from puzzleBuffer 
@@ -467,4 +482,36 @@ function loadFromPuzzleBuffer(){
 	
 	//re-use loadPuzzle()
 	loadPuzzle(true, "pbuf");
+}
+
+//***** resets and starts timer (if it isn't already moving)
+function resetTimer(){
+	startDate = new Date();
+	if(!timerVar) {
+		timerVar = setInterval(function(){updateTimer()}, 1000);
+	}
+}
+
+//***** updates timer display
+function updateTimer(){
+	document.getElementById("lasertimer").innerHTML = getTimeDiff(startDate);
+}
+
+//***** returns string representing time as mm:ss of elapsed time from given date
+function getTimeDiff(sDate){
+	var nDate = new Date();
+	var ets = Math.floor((nDate.getTime() - sDate.getTime())/1000);
+	var min = Math.floor(ets/60);
+	var sec = ets%60;
+	var str = "";
+	if(min<10) str += "0";
+	str += min + ":";
+	if(sec<10) str += "0";
+	str += sec;
+	return str;
+}
+
+//***** displays results upon solving puzzle
+function dispResults(){
+	//TODO
 }
