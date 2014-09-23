@@ -532,7 +532,7 @@ function dispResults(){
 	}
 	var puz = laserProbsArr[pind];
 	str += puz.text;
-	str += '" in ' + clrtime + "!";
+	str += '" in ' + clrtime + " !";
 	
 	res.innerHTML = '<span class="laser-result">\nYou ' + str + '</span>\n<br>\n';
 	
