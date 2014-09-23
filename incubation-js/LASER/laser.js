@@ -72,7 +72,7 @@ function getPuzzleIndex(puzzleId){
 
 //***** resets main table - 
 // swipes contents & lasers and sets new table of size rowstxt and colstxt
-// also resets timer
+// also resets timer if editable is false (i.e., if in problems mode)
 function resetMaintable(editable){
 	var maintable = document.getElementById("maintable");
 	var rows = document.getElementById("rowstxt").value;
@@ -178,8 +178,10 @@ function resetMaintable(editable){
 	maintable.parentNode.replaceChild(tbl,maintable);
 	
 	//reset timer
-	resetTimer();
-	updateTimer();//zero down timer display
+	if(!editable){
+		resetTimer();
+		updateTimer();//zero down timer display
+	}
 }
 
 //***** loads specified puzzle in solve or edit mode
@@ -223,15 +225,18 @@ function loadPuzzle(editable, puzzleId){
 	}
 	
 	//display author if available and displayable
-	var author=laserProbsArr[pind].author;
-	var title = laserProbsArr[pind].text;
-	var tadstr = "<b><u>";
-	if(title!=undefined && title!="") tadstr += title;
-	else tadstr += "Untitled";
-	tadstr += "</u></b> by ";
-	if(author!=undefined && author!="") tadstr += author;
-	else tadstr += "(author unknown)";
-	document.getElementById("titleAuthorDisplay").innerHTML = tadstr;
+	var tad = document.getElementById("titleAuthorDisplay");
+	if(tad!=null){//if it's null, we're probably on the edit mode page
+		var author=laserProbsArr[pind].author;
+		var title = laserProbsArr[pind].text;
+		var tadstr = "<b><u>";
+		if(title!=undefined && title!="") tadstr += title;
+		else tadstr += "Untitled";
+		tadstr += "</u></b> by ";
+		if(author!=undefined && author!="") tadstr += author;
+		else tadstr += "(author unknown)";
+		tad.innerHTML = tadstr;
+	}
 }
 
 
@@ -409,7 +414,7 @@ function dumpPuzzle(){
 function checkAnswer(puzzleId){
 	var check = 1; //1:ok, 0:ng, -1:incomplete
 	var indetAlertStr="the puzzle is incomplete...";
-	var okAlertStr="correct!";
+	var okAlertStr="Correct!\nSee below for results!";
 	var ngAlertStr="something is wrong...";
 	var rows = document.getElementById("rows").value;
 	var cols = document.getElementById("cols").value;
@@ -500,7 +505,8 @@ function updateTimer(){
 //***** returns string representing time as mm:ss of elapsed time from given date
 function getTimeDiff(sDate){
 	var nDate = new Date();
-	var ets = Math.floor((nDate.getTime() - sDate.getTime())/1000);
+	var ets = Math.floor((nDate.getTime() 
+			- sDate.getTime())/1000);
 	var min = Math.floor(ets/60);
 	var sec = ets%60;
 	var str = "";
@@ -513,5 +519,45 @@ function getTimeDiff(sDate){
 
 //***** displays results upon solving puzzle
 function dispResults(){
-	//TODO
+	var clrtime = getTimeDiff(startDate);//call here to minimize difference in display
+	var res = document.getElementById("results");
+	
+	//formulate results string so as to be reusable later for tweet button
+	var str = 'cleared the LASER Puzzle "';
+	var puzzleId = document.getElementById("puzId").value;
+	var pind = getPuzzleIndex(puzzleId);
+	if(pind<0){ //if puzzle id not found - JIC
+		alert("INTERNAL ERROR!");//should not occur
+		return;
+	}
+	var puz = laserProbsArr[pind];
+	str += puz.text;
+	str += '" in ' + clrtime + "!";
+	
+	res.innerHTML = '<span class="laser-result">\nYou ' + str + '</span>\n<br>\n';
+	
+	//*** append results tweet button
+	res.innerHTML += "<span id=\"restwbtn\">Tweet Results: </span>\n";
+	
+	var twtxt = "I " + str;
+	
+	var twa = document.createElement("a");
+	twa.className = "twitter-share-button";
+	twa.href = "http://twitter.com/share";
+	
+	//HACK: need to treat hyphenated properties separately
+	var DATAURL = "https://02f41be48d339da0cde243ece33c283e3f0c321e.googledrive.com/host/0B9f3hv6KkjXcS19ZMmxxdGE5bUE/LASER/puz_LASER.html";
+	if(twa.setProperty){
+		twa.setProperty("data-url", DATAURL, null);
+		twa.setProperty("data-text", twtxt, null);
+	}else{
+		twa.setAttribute("data-url", DATAURL);
+		twa.setAttribute("data-text", twtxt);
+	}
+	
+	document.getElementById("restwbtn").appendChild(twa);
+	
+	//HACK: call twitterAPI function directly; could change?
+	twttr.widgets.load();
 }
+
