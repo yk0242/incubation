@@ -1,0 +1,33 @@
+application: yk0242-incubation-php
+version: 1-0-0-20150807-2
+runtime: php55
+api_version: 1
+
+handlers:
+
+# Serve images as static resources.
+- url: /(.+\.(gif|png|jpg))$
+  static_files: \1
+  upload: .+\.(gif|png|jpg)$
+  application_readable: true
+
+# Redirect to index.php
+- url: /
+  script: index.php
+- url: /index\.html
+  script: index.php
+
+
+# Serve php scripts.
+- url: /(.+\.php)$
+  script: \1
+
+# Serve html scripts.
+- url: /(.+\.html)$
+  script: \1
+
+
+
+# Catch all else
+- url: /.*
+  script: notfound.php
