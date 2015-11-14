@@ -44,7 +44,8 @@ public class SylvieDressingRoomScenarioGeneratorMain {
 	private static final String INITTFPATH = "D:/path/of/TeachingFeeling/";
 	private static final String BRLEFT = "【";
 	private static final String BRRIGHT = "】";
-	private static final String RPEXDRESS = "/data/fgimage/Exdress/";
+	private static final String FS = File.separator;
+	private static final String RPEXDRESS = FS+"data"+FS+"fgimage"+FS+"Exdress"+FS;
 	private static final String RPEXDRESS2 = "Exdress/";
 	private static final String OUTFILENAME = "__customx__.ks";
 	private static final String OUTENC = "UTF-8";
@@ -53,8 +54,8 @@ public class SylvieDressingRoomScenarioGeneratorMain {
 	private static final String LOGFILENAME = "log.txt";
 	private static final String INIFILENAME = "sdrsg_properties.txt";
 	private static final String TFPATHPN = "TFpath";
-	private static final String FS = File.separator;
 	private static final int MAXDISPLEN = 42;
+	private static final String CLEARPNGNAME = "0000000000000_外す.png";
 	/** logger */
 	private static final Logger LOGGER = Logger.getLogger(SylvieDressingRoomScenarioGeneratorMain.class.getName());
 	
@@ -62,7 +63,7 @@ public class SylvieDressingRoomScenarioGeneratorMain {
 		/** absolute path to TF: normally set in ini */
 		String tfAbsPath = INITTFPATH;
 		/** path of layer base under data/fgimage/Exdress */
-		String[] layerBasePath = LAYERLABELS;
+		String[] layerBasePath = LAYERLABELS.clone();
 		/** list of SDLs where data is stored */
 		List<SylvieDressingList> sdlList = new ArrayList<SylvieDressingList>();
 		/** file output contents */
@@ -369,10 +370,18 @@ public class SylvieDressingRoomScenarioGeneratorMain {
 			sb.append("*").append(sdl.getLabel()).append(sdl.getPtr()).append("\n");
 			
 			if(sdl.getIndex()==RIBBONIDX){//ribbon
-				sb.append("[chara_mod name=body time=0 storage=\"chara/2/body-b.png\"]\n");
+				if(isClearPng(sdl.getFilename())){
+					sb.append("[chara_mod name=body time=0 storage=\"chara/2/body-a.png\"]\n");//no ribbon
+				}else{
+					sb.append("[chara_mod name=body time=0 storage=\"chara/2/body-b.png\"]\n");//with ribbon
+				}
 			}
 			if(sdl.getIndex()==PINIDX){//pin
-				sb.append("[chara_mod name=face time=0 storage=\"chara/4/s-s-.png\"]\n");
+				if(isClearPng(sdl.getFilename())){
+					sb.append("[chara_mod name=face time=0 storage=\"chara/4/s-s.png\"]\n");//no pin
+				}else{
+					sb.append("[chara_mod name=face time=0 storage=\"chara/4/s-s-.png\"]\n");//with pin
+				}
 			}
 			
 			sb.append("[chara_mod name=").append(sdl.getLabel());
@@ -387,6 +396,59 @@ public class SylvieDressingRoomScenarioGeneratorMain {
 		}
 		sb.append("\n");
 		sb.append("\n");
+	}
+	/**
+	 * Checks if the filename (after forward and back slashes) is the expected clear png name
+	 * @param fn filename (possibly preceded by subdirs) to test
+	 * @return boolean check result
+	 */
+	protected static boolean isClearPng(String fn){
+		fn = stripSubdirs(fn,0);
+		return (fn.equals(CLEARPNGNAME));
+	}
+	/**
+	 * Strip extra subdirectory entries from filepath
+	 * @param fp filepath to strip subdirs from
+	 * @param keepsubdirs number of subdirs to keep
+	 * @return String stripped filepath (note all slashes will be changed to File.separator)
+	 */
+	protected static String stripSubdirs(String fp, int keepsubdirs){
+		StringBuilder sb = new StringBuilder();
+		List<String> parts = chopFilepath(fp);
+		int ps = parts.size();
+		for(int i=-1*keepsubdirs; i<=0; i++){
+			int idx = ps+i-1;
+			if(idx<0) continue;
+			sb.append(parts.get(idx)).append(FS);
+		}
+		sb.deleteCharAt(sb.length()-1);//remove terminating slash
+		return sb.toString();
+	}
+	/**
+	 * Counts the number of subdirectories in given filepath
+	 * @param fp filepath to examine
+	 * @return int number of subdirectories
+	 */
+	protected static int countSubdirs(String fp){
+		return (chopFilepath(fp).size()-1);
+	}
+	/**
+	 * Chop given filepath into List of Strings
+	 * @param fp filepath to chop
+	 * @return List<String> List of Strings of subdirs+filename
+	 */
+	private static List<String> chopFilepath(String fp){
+		String[] parts1 = fp.split("/");
+		List<String> partsf = new ArrayList<String>();
+		for(int i=0; i<parts1.length;i++){
+			String fpart = parts1[i];
+			String[] parts2 = fpart.split("\\\\");
+			for(int j=0; j<parts2.length;j++) {
+				//don't add to final list if bit is empty: eg given sub//\/\dir
+				if(!parts2[j].equals("")) partsf.add(parts2[j]);
+			}
+		}
+		return partsf;
 	}
 	
 	/**
@@ -408,11 +470,6 @@ public class SylvieDressingRoomScenarioGeneratorMain {
 			int fpslen = filepaths.size();
 			for(int j=0; j<fpslen; j++){
 				String fp = filepaths.get(j);
-//				String[] parts = fp.split("/");
-//				String fn = parts[parts.length-1];
-				if(fp.substring(0, 1).equals("\\")){
-					fp = fp.substring(1, fp.length());//trim leading backslash
-				}
 				LOGGER.fine("== adding to list: "+fp);
 				String fpstore = sdl.getRelpath2() + fp;
 				
@@ -461,12 +518,13 @@ public class SylvieDressingRoomScenarioGeneratorMain {
 	private static List<String> getFileList(String abspath){
 		List<String> filenamelist = new ArrayList<String>();
 		List<File> filelist = new ArrayList<File>();
+		int apsdcnt = countSubdirs(abspath)+1;//+1 since last string is also a dir
 		
 		listf(abspath, filelist);
 		for(int i=0; i<filelist.size(); i++){
 			String fn = filelist.get(i).getAbsolutePath();
 			//use relative filepath after abspath
-			fn = fn.substring(abspath.length());
+			fn = stripSubdirs(fn,countSubdirs(fn)-apsdcnt);
 			filenamelist.add(fn);
 		}
 		return filenamelist;
