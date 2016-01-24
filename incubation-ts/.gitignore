@@ -1,0 +1,7 @@
+/.project
+
+# save space by not uploading common files
+/*/tyrano/
+
+# upload full template for reference
+!/_template_v344/
