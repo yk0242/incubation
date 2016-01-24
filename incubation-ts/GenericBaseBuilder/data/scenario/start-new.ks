@@ -9,17 +9,21 @@
 
 [cm]
 
-starting text...あああ[p]
+開始部分の説明[r]
+TODO 脚色のためにも何か書く[p]
 
 [iscript]
 f.base = new sf.Building();
 f.base.rename("Generic Base");
 [endscript]
 
-Welcome to your new base.[r]
-Your base name is currently [emb exp="f.base.name"].[p]
+あなたの新しい基地へようこそ。[r]
+現在は [emb exp="f.base.name"] ですが、司令部から適宜調整してください。[p]
 
-closing text...[p]
+それでは、司令室へとお連れします…[p]
+
+……[p]
+………[p]
 
 [iscript]
 f.x=2;

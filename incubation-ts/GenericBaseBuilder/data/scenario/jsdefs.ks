@@ -68,7 +68,7 @@ Floor.prototype.getAddNextRoom = function(aX,aY,aDir){//aDir:0=N,1=E,2=S,3=W
 	var x = temp.x; var y = temp.y;
 	//check for out of bounds
 	if(x<0 || x>=this.ewSize || y<0 || y>=this.nsSize) return -1;
-	if(this.rooms[y][x]===null) return this.addRoom(y,x);
+	if(this.rooms[y][x]===null||this.rooms[y][x]===undefined) return this.addRoom(y,x);
 	return this.rooms[y][x];
 };
 Floor.prototype.extendNorth = function(){};

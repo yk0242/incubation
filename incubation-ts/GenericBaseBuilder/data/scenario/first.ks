@@ -2,16 +2,20 @@
 ; is effectively the title page
 
 [call storage=tyrano.ks]
-[title name="GenericBaseBuilder_ver.0.0.1.20151124"]
+[title name="GenericBaseBuilder_ver.0.0.2.20160124"]
 
 *title
 ;TODO make proper title screen -- eventually? 
 [nowait]
 [cm]
-Generic Base Builder[r]
-[link target=*start storage=start-new.ks]【新たに開始】[endlink][r]
-[link target=*load]【ロード】[endlink][r]
-[link target=*quit]【終了】[endlink][r]
+[r]
+_　　　　　　　Generic Base Builder[r]
+[r]
+[r]
+[r]
+_　　　　　　[link target=*start storage=start-new.ks]【新たな基地を建設する】[endlink][r]
+_　　　　　[link target=*load]【保存した基地をロードする】[endlink][r]
+_　　　　　　　　　　　[link target=*quit]【終了】[endlink][r]
 [endnowait]
 [s]
 [jump target=*title]
