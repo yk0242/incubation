@@ -1,6 +1,6 @@
 ;jsdefs.ks - defines all js class defs
 ; to be called from make.ks and game start
-;
+;　
 ; apparently TyranoScript doesn't save prototyped functions within save datas, so
 ; workaround by re-creating each class object in make.ks, and copying data
 
