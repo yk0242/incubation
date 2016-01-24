@@ -6,11 +6,13 @@
 
 *title
 ;TODO make proper title screen -- eventually? 
+[nowait]
 [cm]
 Generic Base Builder[r]
 [link target=*start storage=start-new.ks]【新たに開始】[endlink][r]
 [link target=*load]【ロード】[endlink][r]
 [link target=*quit]【終了】[endlink][r]
+[endnowait]
 [s]
 [jump target=*title]
 

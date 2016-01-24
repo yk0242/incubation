@@ -27,4 +27,4 @@ f.y=2;
 f.z=0;
 f.dir=0;
 [endscript]
-[jump target=*base storage=base.ks]
+[jump target=*show-room storage=room.ks]
