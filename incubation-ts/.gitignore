@@ -1,7 +1,7 @@
 /.project
 
-# save space by not uploading common files
-/*/tyrano/
+# save space by not uploading common files # disabled upon move to github.io
+# /*/tyrano/
 
 # upload full template for reference
 !/_template_v344/
