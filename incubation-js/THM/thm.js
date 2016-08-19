@@ -197,7 +197,7 @@ function ending(thm){
 	twa.href = "http://twitter.com/share";
 	
 	//HACK: need to treat hyphenated properties separately
-	var DATAURL = "https://02f41be48d339da0cde243ece33c283e3f0c321e.googledrive.com/host/0B9f3hv6KkjXcS19ZMmxxdGE5bUE/THM/tht-gen.html";
+	var DATAURL = "https://yk0242.github.io/incubation/incubation-js/THM/tht-gen.html";
 	if(twa.setProperty){
 		twa.setProperty("data-url", DATAURL, null);
 		twa.setProperty("data-text", twtxt, null);
