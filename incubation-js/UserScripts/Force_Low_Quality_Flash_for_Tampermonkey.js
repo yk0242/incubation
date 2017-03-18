@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           Force Low Quality Flash for Tampermonkey
 // @version        1.0.0.20170318
-// @description    Force Low Quality Flash - adapted for Tampermonkey and adding IFRAME support -- based on http://userscripts.org/users/75739 - Force Low Quality Flash by Oscar Sodani
+// @description    Force Low Quality Flash - adapted for Tampermonkey -- based on http://userscripts.org/users/75739 - Force Low Quality Flash by Oscar Sodani
 // @namespace      https://github.com/yk0242
 // @author         yk0242
 // @copyright      2017
@@ -14,22 +14,13 @@
 
 (function forceLowQualityFlash(){
   
-  window.onload = function(){//wait for document (especially the contents of the IFRAMEs) to load
+  window.onload = function(){
     forceLowQualityFlash_act();
-    
-    //-- add support for Flash within IFRAME elements
-    // note: doesn't deal with Flash within IFRAME within another IFRAME -- add another "for" layer or recursion if need be
-    // note also that cross-origin frames canNOT be accessed this way... 
-    if(document.getElementsByTagName('iframe')){
-      for(var objs = document.getElementsByTagName('iframe'), i = objs.length-1 ; i >= 0; i--){
-        forceLowQualityFlash_act(objs[i].contentDocument);
-      }
-    }
   };
   
   function forceLowQualityFlash_act(myDoc = window.document){
   //-- based on http://userscripts.org/users/75739 - Force Low Quality Flash by Oscar Sodani
-  //-- adding error checking to prevent internal error messages
+  //-- adding if checking to prevent internal error messages
   //-- quit using "with" syntax to work with Tampermonkey
     var objs;
     
