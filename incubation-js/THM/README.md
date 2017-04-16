@@ -6,7 +6,7 @@
 
 期待値的には、平均で 136 文字で終了します。
 
-Working Copy: https://02f41be48d339da0cde243ece33c283e3f0c321e.googledrive.com/host/0B9f3hv6KkjXcS19ZMmxxdGE5bUE/THM/tht-gen.html
+Working Copy: https://yk0242.github.io/incubation/incubation-js/THM/tht-gen.html
 
 数式計算とか： [日本語記事][1] / [English Page][2] 
 
