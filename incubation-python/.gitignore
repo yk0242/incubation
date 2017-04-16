@@ -1,0 +1,10 @@
+# eclipse project files and the like
+/.project
+/.settings/
+/.pydevproject
+/.idea/
+
+# font files
+/IPAexfont00301/
+/SourceHanSerifJP/
+/SourceHanSansJP/
