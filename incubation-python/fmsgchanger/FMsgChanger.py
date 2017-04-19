@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# test using kivy to display output for 2-foo-3-bar-6-foobar program 
-# 1. output to console first
-# 2. output results progressively to Kivy App
-# also serving as a test to separate MVC - delegate Model and View (and minimal Controls) to kv file
+# test changing widget texts interactively from .py using msg from fmsg.py
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
