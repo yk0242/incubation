@@ -1,0 +1,47 @@
+# For display of 23foobar
+
+<TwoThreeFooBarScreen>
+    BoxLayout:
+        orientation: 'vertical'
+
+        Label:
+            id: inst_txt
+            size_hint_y: None
+            height: '24px'
+            text: 'Select the Upper Bound of the foobar output and click "GO".'
+
+        BoxLayout:
+            orientation: 'horizontal'
+
+            Label:
+                id: text_out
+                size_hint_y: None
+                valign: 'top'
+                height: self.parent.height
+                text: '(output\n here.)'
+
+            BoxLayout:
+                orientation: 'vertical'
+
+                Label:
+                    id: right_top_blank
+                    size_hint_y: None
+                    height: '360px'
+                    text: ''
+
+                Label:
+                    id: upper_label
+                    size_hint_y: None
+                    height: '36px'
+                    text: u'Upper Bound:' + str(int(upper.value))
+
+                Slider:
+                    id: upper
+                    min: 1
+                    max: 32
+                    value: 18
+
+                Button:
+                    id: button_go
+                    text: 'GO'
+                    on_press: root.foobar_main_out(int(upper.value))
