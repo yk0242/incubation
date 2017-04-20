@@ -16,16 +16,17 @@ class FMsgChangerScreen(BoxLayout):
 
     def set_view(self, screen_id):
         if screen_id == 1:  # FMsgChanger
-            self.ids.title.text = FMsg.get_msg("msg_0001")
-            self.ids.btn.text = FMsg.get_msg("msg_0002")
-            self.ids.subtext.text = FMsg.get_msg("msg_0003")
+            for w_id, widget in self.ids.items():
+                if hasattr(widget, 'text_id') and FMsg.get_msg(widget.text_id) is not None:
+                    print(widget, widget.text_id)  # DEBUG
+                    widget.text = FMsg.get_msg(widget.text_id)
         else:
             print("screen id unidentified: " + screen_id)
 
     def init_view(self, screen_id):
         if screen_id == 1:  # FMsgChanger
             self.ids.btn_jp.text = u"日本語へ"
-            self.set_view(screen_id)
+            # self.set_view(screen_id)
         else:
             print("screen id unidentified: " + screen_id)
 

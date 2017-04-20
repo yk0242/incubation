@@ -1,4 +1,10 @@
 # For display of FMsgChanger - text to be changed by FMsgChanger.py
+#
+# memo: if adding a custom property, actions are a bit buggy,
+#       so be sure to add the property to ALL widgets of that class.
+
+<Widget>
+    font_name: '../SourceHanSansJP/SourceHanSansJP-Medium.otf'
 
 <FMsgChangerScreen>
     BoxLayout:
@@ -12,14 +18,14 @@
             Button:
                 id: btn_jp
                 text: 'to Japanese'
-                font_name: '../SourceHanSansJP/SourceHanSansJP-Medium.otf'
+                text_id: 'none'
                 on_press:
                     root.change_lang(0)
                     root.set_view(1)
             Button:
                 id: btn_en
                 text: 'to English'
-                font_name: '../SourceHanSansJP/SourceHanSansJP-Medium.otf'
+                text_id: 'none'
                 on_press:
                     root.change_lang(1)
                     root.set_view(1)
@@ -30,15 +36,15 @@
             Label:
                 id: title
                 text: 'Title'
-                font_name: '../SourceHanSansJP/SourceHanSansJP-Medium.otf'
+                text_id: 'msg_0001'
 
             Button:
                 id: btn
                 text: 'Btn'
-                font_name: '../SourceHanSansJP/SourceHanSansJP-Medium.otf'
+                text_id: 'msg_0002'
                 on_press: print("button pressed")
 
             Label:
                 id: subtext
                 text: 'Subtext'
-                font_name: '../SourceHanSansJP/SourceHanSansJP-Medium.otf'
+                text_id: 'msg_0003'
