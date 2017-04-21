@@ -32,13 +32,19 @@ class FMsg:
     #                   msg_0003='Message 3',
     #                   dummy_line='-')]  # dummy line to ease input to lines above
 
-    _MSG_FILELIST = [
-        'm_japanese.csv',
-        'm_english.csv'
+    _S_MSG_FILELIST = [
+        'msg/m_japanese.csv',
+        'msg/m_english.csv'
     ]
-    _S_MAX_LANGID = len(_MSG_FILELIST)-1  # maximum langid allowed
+    _S_MAX_LANGID = len(_S_MSG_FILELIST) - 1  # maximum langid allowed
 
     _s_msg_dict = {}  # dictionary of messages
+
+    _SND_DIRLIST = [
+        'sound/ja/',
+        'sound/en/'
+    ]
+    _S_SND_EXT = '.ogg'
 
     def __init__(self, **kwargs):
         super(FMsg, self).__init__(**kwargs)
@@ -48,7 +54,7 @@ class FMsg:
         if langid > FMsg._S_MAX_LANGID:
             return False
         FMsg._s_msg_dict.clear()  # clear dict jic
-        with open(FMsg._MSG_FILELIST[langid], encoding='utf8') as fin:
+        with open(FMsg._S_MSG_FILELIST[langid], encoding='utf8') as fin:
             for line in fin:
                 if ',' in line:
                     (key, val) = line.split(',')
@@ -57,14 +63,20 @@ class FMsg:
         return True
 
     @staticmethod
-    def set_lang(langid):
-        if langid > FMsg._S_MAX_LANGID:
+    def set_lang(lang_id):
+        if lang_id > FMsg._S_MAX_LANGID:
             return False
-        FMsg._s_langid = langid
-        FMsg._read_mdict_from_file(langid)
+        FMsg._s_langid = lang_id
+        FMsg._read_mdict_from_file(lang_id)
         return True
 
     @staticmethod
-    def get_msg(msgid):
-        #  returns corresponding message, or None if message not found
-        return FMsg._s_msg_dict.get(msgid)
+    def get_msg(msg_id):
+        # returns corresponding message, or None if message not found
+        return FMsg._s_msg_dict.get(msg_id)
+
+    @staticmethod
+    def get_snd(msg_id):
+        # returns path to corresponding sound file
+        # NB does NOT guarantee the file actually exists
+        return FMsg._SND_DIRLIST[FMsg._s_langid] + msg_id + FMsg._S_SND_EXT

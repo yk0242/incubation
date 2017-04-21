@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # test changing widget texts interactively from .py using msg from fmsg.py
-
+import pygame.mixer
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 
@@ -13,6 +13,7 @@ class FMsgChangerScreen(BoxLayout):
     def __init__(self, **kwargs):
         super(FMsgChangerScreen, self).__init__(**kwargs)
         self.init_view(1)
+        pygame.mixer.init()
 
     def set_view(self, screen_id):
         if screen_id == 1:  # FMsgChanger
@@ -20,6 +21,8 @@ class FMsgChangerScreen(BoxLayout):
                 if hasattr(widget, 'text_id') and FMsg.get_msg(widget.text_id) is not None:
                     print(widget, widget.text_id)  # DEBUG
                     widget.text = FMsg.get_msg(widget.text_id)
+            pygame.mixer.music.load(FMsg.get_snd("msg_0000"))  # 言語変更メッセージ
+            pygame.mixer.music.play()
         else:
             print("screen id unidentified: " + screen_id)
 
