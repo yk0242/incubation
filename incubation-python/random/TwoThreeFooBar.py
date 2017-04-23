@@ -9,6 +9,9 @@ from kivy.app import App
 # from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 # from kivy.uix.slider import Slider
+from kivy.lang import Builder
+
+Builder.load_file('TwoThreeFooBarKv.kv')
 
 
 class TwoThreeFooBarScreen(BoxLayout):

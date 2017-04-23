@@ -3,9 +3,12 @@
 # test changing widget texts interactively from .py using msg from fmsg.py
 import pygame.mixer
 from kivy.app import App
+from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 
-from fmsgchanger.fmsg import FMsg
+from fmsg import FMsg
+
+Builder.load_file('FMsgChangerKv.kv')
 
 
 class FMsgChangerScreen(BoxLayout):
