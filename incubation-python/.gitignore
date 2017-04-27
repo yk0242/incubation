@@ -8,3 +8,9 @@
 /IPAexfont00301/
 /SourceHanSerifJP/
 /SourceHanSansJP/
+
+# databases
+*.sqlite3
+
+# other resources
+/sqlite/sqlite-dbs/ChinookDatabase1.4_CompleteVersion/
