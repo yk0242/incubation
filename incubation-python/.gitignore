@@ -9,8 +9,16 @@
 /SourceHanSerifJP/
 /SourceHanSansJP/
 
+# pyc files and the like
+*.pyc
+*.pyo
+
 # databases
 *.sqlite3
+
+# log files
+*.log
+*.log.*
 
 # other resources
 /sqlite/sqlite-dbs/ChinookDatabase1.4_CompleteVersion/
