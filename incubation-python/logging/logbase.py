@@ -25,6 +25,7 @@ def main():
     # create HTTPS handler and set level to INFO
     empty_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)  # insecure--only for testing purposes
 
+    # NB remove context entry for python 3.4.2
     hh = logging.handlers.HTTPHandler(FIXEDIP, 'https://'+FIXEDIP+'/random/server_stub.php',
                                       method='POST', secure=True, credentials=None, context=empty_context)
     hh.setLevel(logging.WARNING)
