@@ -10,6 +10,8 @@
 # see also https://docs.python.org/3/library/logging.handlers.html#timedrotatingfilehandler
 #          https://docs.python.org/3/library/logging.handlers.html#httphandler
 
+# revert to following when uploading: FIXEDIP = "192.168.1.2"
+FIXEDIP = "192.168.1.2"
 
 def main():
     import my_submod
@@ -23,7 +25,7 @@ def main():
     # create HTTPS handler and set level to INFO
     empty_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)  # insecure--only for testing purposes
 
-    hh = logging.handlers.HTTPHandler('localhost:443', 'https://localhost/random/server_stub.php',
+    hh = logging.handlers.HTTPHandler(FIXEDIP, 'https://'+FIXEDIP+'/random/server_stub.php',
                                       method='POST', secure=True, credentials=None, context=empty_context)
     hh.setLevel(logging.WARNING)
 
