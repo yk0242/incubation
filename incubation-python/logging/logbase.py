@@ -1,42 +1,89 @@
 # -*- coding: utf-8 -*-
 
-# test logging to file and to HTTPS
+# MAIN for test logging to file and to HTTPS　テスト
+#  usage  : run normally to see WARNING messages and above to file and https
+#           run command-line with flag -v for --verbose mode (INFO and above to file)
+#           run command-line with flag -d for --debug mode (DEBUG and above to file)
+#
 # based on https://docs.python.org/3.4/howto/logging.html#configuring-logging
+#          http://stackoverflow.com/a/15735146/3799649
 # see also https://docs.python.org/3/library/logging.handlers.html#timedrotatingfilehandler
 #          https://docs.python.org/3/library/logging.handlers.html#httphandler
 
-# import logging
-import logging.handlers
-import ssl
 
-# create logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+def main():
+    import my_submod
+    import argparse
 
-# create time rotating file handler and set level to INFO
-fh = logging.handlers.TimedRotatingFileHandler('logs/log_test.log', 'D', 1, 366, 'UTF8')
-fh.setLevel(logging.INFO)
+    # --- set up root logger for run from file
+    import ssl
 
-# create HTTPS handler and set level to INFO
-empty_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)  # insecure--only for testing purposes
+    logr = logging.getLogger()  # the ROOT LOGGER
 
-hh = logging.handlers.HTTPHandler('localhost:443', 'https://localhost/random/server_stub.php',
-                                  method='GET', secure=True, credentials=None, context=empty_context)
-hh.setLevel(logging.WARNING)
+    # create HTTPS handler and set level to INFO
+    empty_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)  # insecure--only for testing purposes
 
-# create formatter
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    hh = logging.handlers.HTTPHandler('localhost:443', 'https://localhost/random/server_stub.php',
+                                      method='POST', secure=True, credentials=None, context=empty_context)
+    hh.setLevel(logging.WARNING)
 
-# add formatter to fh
-fh.setFormatter(formatter)
+    # add handlers to logger
+    logr.addHandler(hh)
+    # ---
 
-# add handlers to logger
-logger.addHandler(fh)
-logger.addHandler(hh)
+    # # --- set up root logger for run from import
+    # import logger_setup
+    # logr = logger_setup.get_setup_logger()
+    # # ---
 
-# 'application' code
-logger.debug('debug message')
-logger.info('info message')
-logger.warning('warn message')
-logger.error('error message')
-logger.critical('critical message')
+    # ### get the logger for use with this module (NOT the root logger used above) ###
+    logger = logging.getLogger(__name__)
+
+    # --- allow for command-line setting of a verbose/debug flag
+    #     cf http://stackoverflow.com/a/14098306/3799649
+    parser = argparse.ArgumentParser(
+        description='Description of main program'
+    )
+    parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+    parser.add_argument("-d", "--debug", help="output debug messages", action="store_true")
+    args = parser.parse_args()
+
+    if args.verbose or args.debug:
+        fh = None
+        for h in logr.handlers:
+            if type(h).__name__ == 'TimedRotatingFileHandler':  # remember to fix this if we change our FileHandler #
+                fh = h
+                break
+        if fh is None:
+            raise ReferenceError("Target File Handler not found")
+
+        if args.verbose:
+            logging.basicConfig(level=logging.INFO)
+            logr.setLevel(logging.INFO)
+            fh.setLevel(logging.INFO)
+            logger.info("--- set logging mode to INFO (--verbose) from cl ---")
+        if args.debug:
+            logging.basicConfig(level=logging.DEBUG)
+            logr.setLevel(logging.DEBUG)
+            fh.setLevel(logging.DEBUG)
+            logger.info("--- set logging mode to DEBUG (--debug) from cl ---")
+    # ---
+
+    # --- 'application' code
+    logger.info('======= starting new session =======')
+    logger.debug('debug message')
+    logger.info('info message')
+    logger.warning('warn message')
+    logger.error('error message')
+    logger.critical('critical message')
+
+    # --- jump to submodule and return
+    logger.info("enter submodule")
+    my_submod.myloop()
+    logger.info("back from submodule")
+
+
+if __name__ == '__main__':
+    import logging.config
+    logging.config.fileConfig('logging.conf')  # ### must be called BEFORE other modules' imports!!! ###
+    main()
