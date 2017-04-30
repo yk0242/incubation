@@ -1,0 +1,43 @@
+# For display of ShutdownScreen
+
+<Widget>
+    font_name: '../SourceHanSansJP/SourceHanSansJP-Medium.otf'
+
+<ShutdownScreen>
+    BoxLayout:
+        orientation: 'vertical'
+
+        Label:
+            id: page_title
+            size_hint_y: 1
+            font_size: '48px'
+            text: 'System Menu Test'
+
+        GridLayout:
+            cols: 2
+            size_hint_y:0.5
+
+            Button:
+                id: btn_screen_off
+                text: 'Turn Screen Off'
+                on_press: root.screen_off()
+            
+            Button:
+                id: btn_screen_off
+                text: 'Turn Screen On'
+                on_press: root.screen_on()
+            
+            Button:
+                id: btn_restart
+                text: 'Restart Computer'
+                on_press: root.restart()
+            
+            Button:
+                id: btn_shutdown
+                text: 'Shutdown Computer'
+                on_press: root.shutdown()
+            
+            Button:
+                id: btn_exit_python
+                text: 'Exit to Raspbian'
+                on_press: root.exit_python()
