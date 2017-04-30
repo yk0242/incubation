@@ -1,0 +1,24 @@
+# For display of ShutdownScreen
+
+<Widget>
+    font_name: '../SourceHanSansJP/SourceHanSansJP-Medium.otf'
+    halign: 'center'
+
+<SystemScreen>
+    BoxLayout:
+        orientation: 'vertical'
+
+        Label:
+            id: page_title
+            size_hint_y: 1
+            font_size: '48px'
+            text: 'System Menu Test'
+
+        GridLayout:
+            cols: 1
+            size_hint_y: 0.25
+
+            Button:
+                id: btn_tr_shutdown_scr
+                text: 'System Shutdown Related Menus... '
+                on_press: root.tr_shutdown_scr()
