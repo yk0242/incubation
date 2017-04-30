@@ -7,6 +7,20 @@
     BoxLayout:
         orientation: 'vertical'
 
+        GridLayout:
+            cols: 2
+            size_hint_y: 0.5
+
+            Button:
+                id: btn_screen_off
+                text: 'Turn Screen Off'
+                on_press: root.screen_off()
+
+            Button:
+                id: btn_screen_on
+                text: 'Turn Screen On'
+                on_press: root.screen_on()
+
         Label:
             id: page_title
             size_hint_y: 1
@@ -15,17 +29,7 @@
 
         GridLayout:
             cols: 2
-            size_hint_y:0.5
-
-            Button:
-                id: btn_screen_off
-                text: 'Turn Screen Off'
-                on_press: root.screen_off()
-            
-            Button:
-                id: btn_screen_off
-                text: 'Turn Screen On'
-                on_press: root.screen_on()
+            size_hint_y: 0.25
             
             Button:
                 id: btn_restart
@@ -36,7 +40,11 @@
                 id: btn_shutdown
                 text: 'Shutdown Computer'
                 on_press: root.shutdown()
-            
+
+        GridLayout:
+            cols: 1
+            size_hint_y: 0.25
+
             Button:
                 id: btn_exit_python
                 text: 'Exit to Raspbian'
