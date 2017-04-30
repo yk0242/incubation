@@ -11,28 +11,30 @@
 #          https://docs.python.org/3/library/logging.handlers.html#httphandler
 
 # revert to following when uploading: FIXEDIP = "192.168.1.2"
-FIXEDIP = "192.168.1.2"
+FIXED_IP = "192.168.1.2"
+
 
 def main():
     import my_submod
     import argparse
 
-    # --- set up root logger for run from file
-    import ssl
+    if False:  # change to True for HTTPS testing
+        # --- set up root logger for run from file
+        import ssl
 
-    logr = logging.getLogger()  # the ROOT LOGGER
+        logr = logging.getLogger()  # the ROOT LOGGER
 
-    # create HTTPS handler and set level to INFO
-    empty_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)  # insecure--only for testing purposes
+        # create HTTPS handler and set level to INFO
+        empty_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)  # insecure--only for testing purposes
 
-    # NB remove context entry for python 3.4.2
-    hh = logging.handlers.HTTPHandler(FIXEDIP, 'https://'+FIXEDIP+'/random/server_stub.php',
-                                      method='POST', secure=True, credentials=None, context=empty_context)
-    hh.setLevel(logging.WARNING)
+        # NB remove context entry for python 3.4.2
+        hh = logging.handlers.HTTPHandler(FIXED_IP, 'https://' + FIXED_IP + '/random/server_stub.php',
+                                          method='POST', secure=True, credentials=None, context=empty_context)
+        hh.setLevel(logging.WARNING)
 
-    # add handlers to logger
-    logr.addHandler(hh)
-    # ---
+        # add handlers to logger
+        logr.addHandler(hh)
+        # ---
 
     # # --- set up root logger for run from import
     # import logger_setup
