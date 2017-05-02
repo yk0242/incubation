@@ -11,8 +11,6 @@ from kivy.uix.boxlayout import BoxLayout
 # from kivy.uix.slider import Slider
 from kivy.lang import Builder
 
-Builder.load_file('TwoThreeFooBarKv.kv')
-
 
 class TwoThreeFooBarScreen(BoxLayout):
     def __init__(self, **kwargs):
