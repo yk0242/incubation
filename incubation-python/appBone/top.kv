@@ -1,0 +1,32 @@
+<Widget>
+    font_name: 'SourceHanSansJP-Medium.otf'
+    halign: 'center'
+
+<TopScreen>
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.05
+
+            Label:
+                id: page_title
+                font_size: '18px'
+                text: 'プロジェクトトップ画面（暫定画面）'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.95
+
+            Button:
+                size_hint_y: 0.25
+                id: btn_to_sys_top_scr
+                text: 'サブシステムA'
+                on_press: root.to_sub_a_top_scr()
+
+            Button:
+                size_hint_y: 0.25
+                id: btn_to_sys_top_scr
+                text: 'システムメニューへ'
+                on_press: root.to_sys_password_scr()

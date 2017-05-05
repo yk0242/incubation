@@ -1,0 +1,68 @@
+<Widget>
+    font_name: 'SourceHanSansJP-Medium.otf'
+    halign: 'center'
+
+<ShutdownScreen>
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.05
+
+            Button:
+                id: btn_tr_systop_scr
+                text: 'システムツール画面へ戻る'
+                on_press: root.tr_system_top_scr()
+                size_hint_x: 'none'
+                width: '150px'
+
+            Label:
+                id: page_title
+                font_size: '18px'
+                text: 'システムシャットダウン関連メニュー'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.95
+
+            GridLayout:
+                cols: 2
+                size_hint_y: 2
+
+                Button:
+                    id: btn_screen_off
+                    text: 'スクリーンをオフにする'
+                    on_press: root.screen_off()
+
+                Button:
+                    id: btn_screen_on
+                    text: 'スクリーンをオンにする'
+                    on_press: root.screen_on()
+
+            Label:
+                id: txt-line
+                text: '------------'
+                size_hint_y: 0.2
+
+            GridLayout:
+                cols: 2
+
+                Button:
+                    id: btn_restart
+                    text: 'システム再起動'
+                    on_press: root.restart()
+
+                Button:
+                    id: btn_shutdown
+                    text: 'システムシャットダウン'
+                    on_press: root.shutdown()
+            Label:
+                id: txt-line2
+                text: '------------'
+                size_hint_y: 0.2
+
+            Button:
+                id: btn_exit_python
+                text: 'プログラム終了'
+                on_press: root.exit_python()

@@ -1,0 +1,37 @@
+<Widget>
+    font_name: 'SourceHanSansJP-Medium.otf'
+    halign: 'center'
+
+<SystemScreen>
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.05
+
+            Button:
+                id: btn_to_top_scr
+                text: u'トップ画面へ戻る'
+                on_press: root.to_top_scr()
+                size_hint_x: 'none'
+                width: '150px'
+
+            Label:
+                id: page_title
+                font_size: '18px'
+                text: 'システムツール'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.95
+
+            Button:
+                id: btn_to_shutdown_scr
+                text: u'システムシャットダウンや関連メニュー'
+                on_press: root.to_shutdown_rel_scr()
+
+            Button:
+                id: btn_to_fmc_scr
+                text: '使用言語変更メニュー'
+                on_press: root.to_lang_change_scr()

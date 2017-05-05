@@ -1,0 +1,19 @@
+# eclipse project files and the like
+/.project/
+/.settings/
+/.pydevproject
+/.idea/
+
+# external libraries
+/extlib/
+
+# pyc files and the like
+*.pyc
+*.pyo
+
+# databases
+*.sqlite3
+
+# log files
+*.log
+*.log.*

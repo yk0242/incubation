@@ -1,0 +1,71 @@
+<Widget>
+    font_name: 'SourceHanSansJP-Medium.otf'
+    halign: 'center'
+
+<LangChangeScreen>
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.05
+
+            Button:
+                id: btn_tr_system_top_scr
+                text: 'システムツール画面へ戻る'
+                on_press: root.tr_system_top_scr()
+                size_hint_x: 'none'
+                width: '150px'
+
+            Label:
+                id: page_title
+                font_size: '18px'
+                text: '使用言語選択'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.95
+
+            GridLayout:
+                cols: 2
+                height: '48px'
+                size_hint_y: None
+
+                Button:
+                    id: btn_jp
+                    text: '日本語へ変更'
+                    text_id: 'none'
+                    on_press:
+                        root.change_lang(0)
+                        root.set_view()
+                Button:
+                    id: btn_en
+                    text: 'Change to English'
+                    text_id: 'none'
+                    on_press:
+                        root.change_lang(1)
+                        root.set_view()
+
+            BoxLayout:
+                orientation: 'vertical'
+
+                Label:
+                    id: notice
+                    text: 'notice (to be read out aloud)'
+                    text_id: 'msg_00000'
+
+                Label:
+                    id: title
+                    text: 'Title'
+                    text_id: 'msg_00001'
+
+                Button:
+                    id: btn
+                    text: 'Btn'
+                    text_id: 'msg_00002'
+                    on_press: print("button pressed")
+
+                Label:
+                    id: subtext
+                    text: 'Subtext'
+                    text_id: 'msg_00003'
