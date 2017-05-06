@@ -33,7 +33,7 @@ from subsystema import *
 pygame.mixer.init()
 
 # ### constants to set ### #
-DO_HTTPS_LOGGING = False  # ### True for production and https logging testing
+DO_HTTPS_LOGGING = False   # ### True for production and https logging testing
 DEBUG_MODE = False        # ### False for production
 FILE_HANDLER = 'TimedRotatingFileHandler'  # remember to fix this if we change our FileHandler
 
@@ -86,6 +86,7 @@ def _init_logging():
         logger.info("------- DEBUG_MODE でログ出力中 -------")
         sh = logging.StreamHandler(stdout)
         sh.setFormatter(logging.Formatter('%(asctime)s %(name)s(%(lineno)s) [:%(levelname)s:] %(message)s'))
+        sh.setLevel(logging.DEBUG)
         logging.getLogger().addHandler(sh)  # DEBUG_MODE でも stdout に出力できるようにする
     # ---
 
