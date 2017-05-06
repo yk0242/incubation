@@ -1,0 +1,21 @@
+<ColorChange>
+    canvas.before:
+        Color:
+            rgb: root.bg_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        Button:
+            id: btn
+            text: 'Press to change colors'
+            on_press: root.change_color()
+
+        Label:
+            id: curr_color_label
+            text: root.bg_color_txt
+            color: 0.5, 0.5, 0.5, 1
+
