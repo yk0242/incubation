@@ -13,8 +13,8 @@ class FMsg:
     # 1: 英語 etc.
 
     _S_MSG_FILELIST = [
-        'msg/m_japanese.csv',
-        'msg/m_english.csv'
+        'msg/m_japanese.properties',
+        'msg/m_english.properties'
     ]
     _S_MAX_LANGID = len(_S_MSG_FILELIST) - 1  # maximum langid allowed
 
@@ -37,8 +37,8 @@ class FMsg:
         file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), FMsg._S_MSG_FILELIST[langid]))
         with open(file_path, encoding='utf8') as fin:
             for line in fin:
-                if ',' in line:
-                    (key, val) = line.split(',')
+                if '=' in line:
+                    (key, val) = line.split('=')
                     FMsg._s_msg_dict[key.strip()] = val.strip()
                     logger.debug(FMsg._s_msg_dict)
         return True
