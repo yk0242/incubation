@@ -50,6 +50,7 @@ class CheckBoxPopup(Popup):
 
 class CheckBoxWithConfirm(CheckBox):
     def on_active(self, checkbox, value):
+        super(CheckBoxWithConfirm, self).on_active(checkbox, value)
         if value:  # when checked
             pop = CheckBoxPopup(caller=self)
             pop.open()
