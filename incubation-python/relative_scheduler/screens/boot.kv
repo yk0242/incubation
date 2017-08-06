@@ -1,0 +1,25 @@
+#: import scr_mgr kivy.uix.screenmanager
+<Label>
+    font_name: 'SourceHanSansJP-Normal.otf'
+    halign: 'center'
+<Button>
+    font_name: 'SourceHanSansJP-Normal.otf'
+    halign: 'center'
+
+<ScreenRoot>
+    BoxLayout:
+        orientation: 'vertical'
+
+        ActionBar:
+            size_hint_y: 0.15
+            ActionView:
+                ActionPrevious:
+                    app_icon_height: -1
+                    app_icon_width: -1
+                    with_previous: root.show_back
+                    title: app.page_title
+                    on_press: root.back_button_pressed()
+
+        ScreenManager:
+            id: sm
+            transition: scr_mgr.NoTransition()

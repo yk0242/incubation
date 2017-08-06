@@ -1,0 +1,8 @@
+# project files and the like
+/.idea/
+
+# log files
+*.log
+
+# client_secret.json should not be shared
+resources/client_secret.json

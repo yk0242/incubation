@@ -1,0 +1,18 @@
+<TopScreen>
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 1
+
+        Label:
+            size_hint_y: 0.5
+            text: "（ボタンを押すと10秒後にメールが飛びます。）"
+
+        Button:
+            size_hint_y: 0.25
+            id: btn_start
+            text: 'スケジュール開始'
+            on_press: root.start_schedule()
+
+        Label:
+            size_hint_y: 0.25
+            text: ""
