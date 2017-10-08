@@ -1,0 +1,4 @@
+/.project
+
+# ignore ini files
+*.ini
