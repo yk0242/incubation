@@ -108,8 +108,7 @@ https://myaccount.google.com/lesssecureapps
 OS：Windows10（開発環境）
 　　Windows7 （動作確認）
 
-UWSC：ver.4.8b   （開発環境）
-　　　ver.5.3.0.2（動作確認）
+UWSC：ver.5.3.0.2（開発環境）
 
 
 
@@ -119,7 +118,8 @@ UWSC：ver.4.8b   （開発環境）
 
 本アプリは、同梱のMITライセンスの範囲内での再利用・再配布を可能とします。
 
-本ソフトウェアのソースコードは、暗号化モジュールを例外に、以下のGitHubページにて公開しています：
+本ソフトウェアの最新のソースコードは、暗号化モジュールを例外に、
+以下のGitHubページにて公開しています：
 https://github.com/yk0242/incubation/tree/master/incubation-uwsc/relative_timer/
 
 以下のどちらにでも、要望・不具合報告・感想などを頂けると、作者が喜びます：
