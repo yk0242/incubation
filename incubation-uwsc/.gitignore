@@ -1,4 +1,6 @@
 /.project
 
-# ignore ini files
+# ignore files
 *.ini
+*.log
+*.exe

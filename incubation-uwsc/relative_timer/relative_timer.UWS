@@ -1,0 +1,320 @@
+//20171003 yybtcbk - A relative timer to suit your needs. 
+
+OPTION EXPLICIT
+LOGPRINT(TRUE)
+STOPFORM(TRUE)
+OPTION LOGPATH="relative_timer_last_run.log"
+OPTION LOGFILE=4
+OPTION DLGTITLE="Relative Timer"
+
+schedule.init()
+schedule.main_loop()
+
+MSGBOX("本日のスケジュールは終了です。<#CR>お疲れ様でした。")
+
+EXITEXIT //jic
+
+
+
+
+//TODO fix msgs
+
+MODULE schedule
+
+CONST MAX_ITEMS = 256      //最大スケジュール数
+CONST DISP_INTERVAL = 1    //左上のバルーンのリフレッシュ秒数
+CONST DISP_INTERVAL2 = 10  //スケジュール一覧のリフレッシュ秒数
+CONST SEND_SLEEP_TIME = 10 //メール送信後に赤バルーンを表示する秒数
+CONST DISP_MMSG_LINES= 3   //メール本文のうち、この行数だけバルーンで表示する
+CONST SPLITTER = ","       //INIファイルのscheduleセクションのエントリーの区切り文字
+DIM schedule[MAX_ITEMS][4] //各スケジュールの、開始までの秒数差異、メールタイトル、メール本文、hhmmss指定
+DIM start_time             //カウント開始時間、差分時間込み
+DIM start_time_true        //カウント開始時間、起動時に取得した時間
+DIM ptr                    //次のスケジュールのポインター
+DIM schedule_disp          //スケジュール表示中フラグ
+
+//=== 以下、iniファイルから設定される変数群
+DIM display                // 1:吹き出しを常に表示する、2:メール発信時にだけ吹き出しを表示する、0:ログプリントのみ
+DIM use_shifted_start      // 1:使用する：起動時に差分時間を入力、0:使用しない：起動時に起算開始
+DIM suppress_past_events   // 1:開始時点で過ぎているスケジュールは無視、0:無視せず処理
+DIM email                  // 1:メールを飛ばす、0:メールを飛ばさない
+DIM balloon_color1         //通常バルーン色
+DIM balloon_color2         //送信バルーン色
+DIM balloon_color3         //灰色バルーン色
+
+
+//初期化用関数。メイン処理の前に必ず呼ぶ事。
+FUNCTION init()
+	DIM res, work
+	CALL modules\ini_module.UWS
+	ini_module.init("relative_timer_schedule.ini")
+	
+	//preload email property from ini if it exists
+	IF ini_module.ini_exists() THEN
+		ini_module.set_section("settings")
+		email = ini_module.read_validated("email", "1", "0,1", TRUE)
+	ELSE
+		email = 1 //初回起動時はメール設定をする
+	ENDIF
+	
+	//init Gmail module
+	IF (email = 1) THEN
+		ini_module.release() //GmailのINI設定をするので、一旦解放する
+		CALL modules\gmail_module.UWS
+		res = gmail_module.init()
+		IF res = FALSE THEN //quit on INI init
+			MSGBOX("Gmail設定が未完のため、一旦終了します。<#CR>もう一度、最初からやり直して下さい。")
+			EXITEXIT
+		ENDIF
+		ini_module.init("relative_timer_schedule.ini") //再度初期化する
+	ENDIF
+	
+	IF !ini_module.ini_exists() THEN //create ini if not there
+		//ファイルの大枠を最初に設定する
+		ini_module.start_afresh("_
+;=============================<#CR>_
+; Relative Timer 設定ファイル <#CR>_
+;=============================<#CR>_
+<#CR>_
+[schedule]<#CR>_
+; 開始時間からメール発信までの経過時間、その際のメールのタイトル、<#CR>_
+;  メールの本文を、半角カンマ（,）区切りで記載する。<#CR>_
+; 時間は左から 時:分:秒 と表記し、間は半角コロン（:）で区切る事。<#CR>_
+; イコール（=）の前の項番は1から順に、時系列順に並べる事。（最大256項目）<#CR>_
+; 24時間以上、60分・秒以上の表記にも対応。カンマ前後の半角スペースは任意。<#CR>_
+; 本文内の改行は<##CR>と記載すると可能。文章内でカンマを使う場合は、<#CR>_
+;  対象部分（タイトル・本文）全体をダブルクオーテーション（<#DBL><#DBL>）で囲む事。<#CR>_
+;-----------------------------------------------------------------------<#CR>_
+<#CR>_
+<#CR>_
+<#CR>_
+[settings]<#CR>")
+		//scheduleセクションに、デモスケジュールを設定
+		ini_module.set_section("schedule")
+		ini_module.write("1", "00:00:66"+SPLITTER+" タイトル：支度を始める "+SPLITTER+" <#DBL>送信本文<##CR><##CR>改行は<##CR>で,カンマを使う場合は半角ダブルクオーテーションで囲む<#DBL>")
+		ini_module.write("2", "00:01:42"+SPLITTER+" そろそろお湯が沸きます"+SPLITTER+" 一分ちょっと後 のイベントです。<##CR>コーヒーか紅茶でもいかがでしょう？")
+		ini_module.write("3", "01:02:03"+SPLITTER+" 出発時間です"+SPLITTER+" 一時間ちょっと後のイベントです。<##CR>そろそろ出ないと間に合わないですよ……？")
+		ini_module.write("4", "26:00:00"+SPLITTER+" 寝るタイミングを逃していませんか？"+SPLITTER+" 一日以上後のイベントです。<##CR>これが表示されると言う事は、活動時間が長すぎです……")
+		ini_module.write("5", "240:00:00"+SPLITTER+"240時間後……"+SPLITTER+" 十日後のイベントです。<##CR>主に動作テスト用です。")
+		//settingsセクションに、初期値と説明書きを設定
+		ini_module.set_section("settings")
+		ini_module.write("display", "1               # 1:バルーンを常に表示する、2:メール発信時のみバルーンを表示する、0:ログプリントのみ")
+		ini_module.write("email", "1                 # 1:メールを飛ばす、0:メールを飛ばさない")
+		ini_module.write("use_shifted_start", "1     # 1:使用する：起動時に差分時間を入力、0:使用しない：起動時に起算開始")
+		ini_module.write("suppress_past_events", "1  # 1:開始時点で過ぎているスケジュールは無視、0:無視せず処理")
+		ini_module.write("balloon_color1", "FFFF00   # 通常バルーン色(RGB)")
+		ini_module.write("balloon_color2", "FF0000   # 送信バルーン色(RGB)")
+		ini_module.write("balloon_color3", "AAAAAA   # 灰色バルーン色(RGB)")
+		//msg and exit
+		MSGBOX("INIファイル（relative_timer_schedule.ini）を初期化しました。<#CR>スケジュールを設定してください。")
+		RESULT = FALSE
+		EXITEXIT
+	ENDIF
+	
+	//read in settings
+	ini_module.set_section("settings")
+	display = ini_module.read_validated("display", "1", "0,1,2", TRUE)
+	use_shifted_start = ini_module.read_validated("use_shifted_start", "1", "0,1", TRUE)
+	suppress_past_events = ini_module.read_validated("suppress_past_events", "1", "0,1", TRUE)
+	email = ini_module.read_validated("email", "1", "0,1", TRUE)
+	balloon_color1 = "$"+rgb_bgr(ini_module.read_validated("balloon_color1", "FFFF00", "hex", TRUE))
+	balloon_color2 = "$"+rgb_bgr(ini_module.read_validated("balloon_color2", "FF0000", "hex", TRUE))
+	balloon_color3 = "$"+rgb_bgr(ini_module.read_validated("balloon_color3", "AAAAAA", "hex", TRUE))
+	
+	
+	//read in and process schedule
+	DIM ctr = 1
+	DIM ret = "x:x:x,x,x"
+	ini_module.set_section("schedule")
+	ret = ini_module.read("1")
+	
+	WHILE (ret <> "") AND (ctr <= MAX_ITEMS)
+		//secs_to
+		work = TRIM(TOKEN(SPLITTER, ret, FALSE, TRUE))
+		schedule[ctr-1][0] = hhnnss_to_secs(work)
+		schedule[ctr-1][3] = work
+		//subject
+		work = TRIM(TOKEN(SPLITTER, ret, FALSE, TRUE))
+		IF (POS("<#DBL>", work) = 1) AND (POS("<#DBL>", work, -1) = LENGTH(work)) THEN //TRIM "
+			work = COPY(work, 2, LENGTH(work)-2)
+		ENDIF
+		schedule[ctr-1][1] = work
+		//msg
+		work = TRIM(TOKEN(SPLITTER, ret, FALSE, TRUE))
+		IF (POS("<#DBL>", work) = 1) AND (POS("<#DBL>", work, -1) = LENGTH(work)) THEN //TRIM "
+			work = COPY(work, 2, LENGTH(work)-2)
+		ENDIF
+		schedule[ctr-1][2] = REPLACE(work,"<##CR>", "<#CR>")
+		ctr = ctr+1
+		ret = ini_module.read(ctr)
+	WEND
+	
+	//release ini, since we're done with it
+	ini_module.release()
+	
+	//ask for time shift if desired
+	DIM shift = 0
+	IF (use_shifted_start = 1) THEN
+		ret = INPUT("開始時間差分を hh:mm:ss 形式で入力して下さい。<#CR>（例１：一時間前は -01:00:00 ）<#CR>（例２：　 三分後は　00:03:00 ）", "-00:00:00", FALSE)
+		IF ret = EMPTY THEN
+			MSGBOX("開始せずに終了します。")
+			EXITEXIT
+		ENDIF
+		ret = TRIM(ret)
+		IF ret = "" THEN ret = "00:00:00"
+		shift = hhnnss_to_secs(ret)
+	ENDIF
+	
+	//start the clock etc.
+	start_time_true = GETTIME()
+	start_time = start_time_true + shift
+	ptr = 0
+FEND
+
+//タイマーメインループ。実際のタイマー動作やメール発信はここから。
+FUNCTION main_loop()
+	DIM ret, i, mmsgcut, work
+	IF (display = 1) THEN
+		schedule_disp = TRUE
+	ENDIF
+	WHILE (schedule[ptr][0] <> "") AND (ptr < MAX_ITEMS)
+		IF (display = 1) THEN
+			REPEAT
+				SLEEP(0.1)
+			UNTIL (schedule_disp = TRUE)
+			THREAD show_schedule
+		ENDIF
+		
+		//prepare mail message to display
+		mmsgcut = ""
+		work = schedule[ptr][2]
+		FOR i=1 TO DISP_MMSG_LINES
+			mmsgcut = mmsgcut + TOKEN("<#CR>",work,TRUE,FALSE) + "<#CR>"
+		NEXT
+		
+		//loop for one schedule item
+		DIM now_time = GETTIME()
+		DIM due_time = start_time+schedule[ptr][0]
+		DIM msg
+		REPEAT
+			SLEEP(DISP_INTERVAL)
+			msg = schedule[ptr][1]+"<#CR><#CR>"+mmsgcut+"<#CR>残り時間： "+secs_to_hhnnss(due_time-now_time)
+			PRINT "<#CR>============<#CR>"+msg
+			IF (display = 1) THEN
+				FUKIDASI(msg, 0, 0, , 18, , , balloon_color1)
+			ENDIF
+			now_time = GETTIME()
+		UNTIL (now_time >= due_time)
+		
+		//the time has come
+		msg = schedule[ptr][1]+"<#CR><#CR>"+mmsgcut+"<#CR>"
+		IF (suppress_past_events = 1) AND (due_time < start_time_true) THEN //開始時間に既に過去のイベント
+			msg = msg + "⇒このスケジュールは開始前に期限切れのため、無視します……"
+			IF (display = 1) OR (display = 2) THEN
+				FUKIDASI(msg, 0, 0, , 24, , , balloon_color3)
+			ENDIF
+		ELSE //処理するイベント
+			IF (email = 1) THEN
+				msg = msg + "⇒通知メールを発信します……"
+			ELSE
+				msg = msg + "⇒予定の時間です。"
+			ENDIF
+			IF (display = 1) OR (display = 2) THEN
+				FUKIDASI(msg, 0, 0, , 24, , , balloon_color2)
+			ENDIF
+			IF (email = 1) THEN
+				ret = gmail_module.send(schedule[ptr][1], schedule[ptr][2])
+				IF ret = FALSE THEN
+					MSGBOX("メール送信に失敗しました。<#CR>各種設定を見直して下さい。",BTN_OK,G_SCREEN_W/2,G_SCREEN_H-200)
+				ENDIF
+			ENDIF
+		ENDIF
+		PRINT "<#CR>============<#CR>"+msg
+		IF (display = 1) THEN
+			schedule_disp = FALSE
+		ENDIF
+		SLEEP(SEND_SLEEP_TIME)
+		ptr = ptr+1
+		
+		FUKIDASI("（次の処理まで待機中……）", 0, 0, , , , , balloon_color3)
+	WEND
+	FUKIDASI()
+	RESULT = TRUE
+FEND
+
+//スケジュール（全イベントの時間オフセットとタイトル）を表示。
+// 次に呼ばれるイベントに「＞」マーカーが付く。
+// 別の吹き出しを表示するために、別スレッド起動される。
+PROCEDURE show_schedule
+	DIM content = ""
+	DIM content2
+	DIM nowtime
+	DIM i = 0
+	DIM ret = schedule[i][1]
+	WHILE (ret <> "")
+		IF ptr = i THEN
+			content = content + "＞"
+		ELSE
+			content = content + "　 "
+		ENDIF
+		content = content + schedule[i][3] + " " + ret + "<#CR>"
+		i = i+1
+		ret = schedule[i][1]
+	WEND
+	WHILE (schedule_disp = TRUE)
+		nowtime = GETTIME()
+		content2 = content +"----------------------------<#CR>開始時間からおよそ "
+		content2 = content2 +secs_to_hhnnss(nowtime-start_time)+" 経過"
+		FUKIDASI(content2, 0, G_SCREEN_H/2, , , , , balloon_color1)
+		sleep(DISP_INTERVAL2)
+	WEND
+	schedule_disp = TRUE
+FEND
+
+//=== Utility Functions ===
+
+//「hh:mm:ss」形式から秒数に変換する
+FUNCTION hhnnss_to_secs(hhnnss)
+	DIM sign = 1
+	IF (POS("-", hhnnss) = 1) THEN
+		hhnnss = BETWEENSTR(hhnnss, "-", )
+		sign = -1
+	ENDIF
+	//省略形は時間、次いで分と見做す
+	IF (POS(":", hhnnss) = 0) THEN
+		hhnnss = hhnnss + ":00"
+	ENDIF
+	IF (POS(":", hhnnss, 2) = 0) THEN
+		hhnnss = hhnnss + ":00"
+	ENDIF
+	DIM work = SPLIT(hhnnss, ":")
+	RESULT = sign * ( VAL(work[0])*3600 + VAL(work[1])*60 + VAL(work[2]) )
+FEND
+
+//秒数から「hh:mm:ss」形式に変換する
+FUNCTION secs_to_hhnnss(secs)
+	DIM signstr = ""
+	IF (secs < 0) THEN
+		signstr = "-"
+		secs = -1*secs
+	ENDIF
+	DIM ss = secs MOD 60
+	DIM mins = INT(secs/60)
+	DIM nn = mins MOD 60
+	DIM hh = INT(mins/60)
+	RESULT = signstr+zeropad(hh,2)+":"+zeropad(nn,2)+":"+zeropad(ss,2)
+FEND
+
+//頭をゼロ埋めして桁数を合わせる
+FUNCTION zeropad(num, digits)
+	num = FORMAT(VAL(num), digits)
+	num = REPLACE(num, " ", "0")
+	RESULT = num
+FEND
+
+//RGB値とBGR値の相互変換を行う
+FUNCTION rgb_bgr(txt)
+	RESULT = COPY(txt,5,2)+COPY(txt,3,2)+COPY(txt,1,2)
+FEND
+
+ENDMODULE

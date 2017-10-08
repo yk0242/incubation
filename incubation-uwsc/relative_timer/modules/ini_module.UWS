@@ -1,0 +1,221 @@
+//20171007 yybtcbk - A wrapper module for reading from / writing to ini files
+
+MODULE ini_module
+
+DIM inifile = ""         //現在対象としているINIファイルのファイル名
+DIM section = ""         //現在対象としているINIファイルのセクション名
+DIM comment_chars = "#;" //これらの文字以降をコメントとして扱う
+
+//初期化用関数。メイン処理の前に必ず呼ぶ事。
+//既に他所から使われていた場合は、FALSEを返すので、
+//使い終わったら、release()で解放する事。
+FUNCTION init(file_name)
+	IF inifile <> "" THEN
+		DIM msg = "他から既に使われています。現在の対象INI："+inifile
+		PRINT msg
+		RESULT = msg
+		EXIT
+	ENDIF
+	inifile = file_name
+	section = ""
+	RESULT = TRUE
+FEND
+
+//解放用関数。使い終わった時には勿論、
+//他所で同モジュールを使う前にも一時的にreleaseが必要。
+FUNCTION release()
+	IF inifile = "" THEN
+		DIM msg = "対象INIが既にありません。"
+		PRINT msg
+		RESULT = msg
+		section = ""
+		EXIT
+	ENDIF
+	inifile = ""
+	section = ""
+	RESULT = TRUE
+FEND
+
+//対象のINIファイルが存在するかを返す。
+FUNCTION ini_exists()
+	DIM fcnt = GETDIR(GET_CUR_DIR, inifile)
+	IF fcnt = 0 THEN
+		RESULT = FALSE
+	ELSE
+		RESULT = TRUE
+	ENDIF
+FEND
+
+//対象のINIファイルを削除する。
+FUNCTION delete_inifile()
+	DIM ret = DOSCMD("DEL "+GET_CUR_DIR+"\"+inifile)
+	IF ret = "" THEN
+		RESULT = TRUE
+	ELSE
+		RESULT = ret
+	ENDIF
+FEND
+
+//INIファイルの初期化を行い、渡されたテキストを書き込む。
+//この後はWRITEINI()で書き込む都合上、ファイル頭のコメントなどはここで作成する。
+FUNCTION start_afresh(starting_text="")
+	IF inifile = "" THEN
+		DIM msg = "対象INIが未設定です。"
+		PRINT msg
+		RESULT = msg
+		EXIT
+	ENDIF
+	DIM fid = FOPEN(inifile, F_READ or F_WRITE8)
+	FPUT(fid, starting_text, F_ALLTEXT)
+	DIM res = FCLOSE(fid)
+	IF res = FALSE THEN
+		RESULT = "INIファイル書き込みに失敗しました。"
+	ENDIF
+	RESULT = TRUE
+FEND
+
+//読み書きの対象とするセクション名を変更する。
+FUNCTION set_section(section_n)
+	IF inifile = "" THEN
+		DIM msg = "対象INIが未設定です。"
+		PRINT msg
+		RESULT = msg
+		EXIT
+	ENDIF
+	section = section_n
+	RESULT = TRUE
+FEND
+
+//プロパティ読み込み（READINI()）のラッパー。
+FUNCTION read(key)
+	IF inifile = "" THEN
+		DIM msg = "対象INIが未設定です。"
+		PRINT msg
+		RESULT = msg
+		EXIT
+	ENDIF
+	IF section = "" THEN
+		msg = "対象セクションが未設定です。"
+		PRINT msg
+		RESULT = msg
+		EXIT
+	ENDIF
+	RESULT = READINI(section, key, inifile)
+FEND
+
+//プロパティ書き込み（WRITEINI()）のラッパー。
+FUNCTION write(key, value)
+	IF inifile = "" THEN
+		DIM msg = "対象INIが未設定です。"
+		PRINT msg
+		RESULT = msg
+		EXIT
+	ENDIF
+	IF section = "" THEN
+		msg = "対象セクションが未設定です。"
+		PRINT msg
+		RESULT = msg
+		EXIT
+	ENDIF
+	WRITEINI(section, key, value, inifile)
+	RESULT = TRUE
+FEND
+
+//プロパティ削除（DELETEINI()）のラッパー。
+//キー指定が空文字（""）の場合はセクション削除。
+FUNCTION delete(key)
+	IF inifile = "" THEN
+		DIM msg = "対象INIが未設定です。"
+		PRINT msg
+		RESULT = msg
+		EXIT
+	ENDIF
+	IF section = "" THEN
+		msg = "対象セクションが未設定です。"
+		PRINT msg
+		RESULT = msg
+		EXIT
+	ENDIF
+	IF key = "" THEN
+		DELETEINI(section, , inifile)
+	ELSE
+		DELETEINI(section, key, inifile)
+	ENDIF
+	RESULT = TRUE
+FEND
+
+//コメント開始文字を変更する。
+PROCEDURE set_comment_chars(chars)
+	comment_chars = chars
+FEND
+
+//プロパティ読み込みを行い、コメント文字以降と、前後の半角スペースを省いた結果を返す。
+FUNCTION read_remove_comment(key)
+	RESULT = TRIM(TOKEN(comment_chars,read(key),FALSE,FALSE))
+FEND
+
+//プロパティ読み込みを行った上で、その結果が
+//渡された可能値一覧に無い場合、デフォルト値を代わりに返す。
+//可能値一覧はカンマ区切りのStringで渡す。
+//可能値として "num" が渡された場合は、数値チェックを行う。
+//可能値として "hex" が渡された場合は、16進数値チェックを行う。
+FUNCTION read_validated(key, default_v, allowed_list_str, remove_comment=FALSE)
+	DIM allowed_set = SPLIT(allowed_list_str, ",")
+	DIM res
+	IF remove_comment THEN
+		res = read_remove_comment(key)
+	ELSE
+		res = read(key)
+	ENDIF
+	DIM allowed
+	DIM i
+	
+	IF res = "" THEN
+		allowed = FALSE
+	ELSE
+		IF allowed_set[0] = "num" THEN //数値チェック
+			IF VAL(res) <> ERR_VALUE THEN
+				allowed = TRUE
+			ELSE
+				allowed = FALSE
+			ENDIF
+		
+		ELSEIF allowed_set[0] = "hex" THEN //16進数値チェック
+			allowed = TRUE
+			DIM char, j, char_allowed
+			DIM hexchars[] = "0","1","2","3","4","5","6","7","8","9","A","a","B","b","C","c","D","d","E","e","F","f"
+			FOR i=1 TO LENGTH(res)
+				char = COPY(res, i, 1)
+				char_allowed = FALSE
+				FOR j=0 TO LENGTH(hexchars)-1
+					IF char = hexchars[j] THEN
+						char_allowed = TRUE
+						BREAK
+					ENDIF
+				NEXT
+				IF char_allowed = FALSE THEN
+					allowed = FALSE
+					BREAK
+				ENDIF
+			NEXT
+		
+		ELSE //一覧チェック
+			allowed = FALSE
+			FOR i=0 TO LENGTH(allowed_set)-1
+				IF allowed_set[i] = res THEN
+					allowed = TRUE
+					BREAK
+				ENDIF
+			NEXT
+		ENDIF
+	ENDIF
+	
+	IF allowed = FALSE THEN
+		PRINT key+" の値として不正な値を取得しました："+res
+		PRINT "　代わりにデフォルト値を返します："+default_v
+		res = default_v
+	ENDIF
+	RESULT = res
+FEND
+
+ENDMODULE

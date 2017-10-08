@@ -1,0 +1,106 @@
+//20171003 yybtcbk - a simple Gmail settings and send-to-self module. 
+
+MODULE gmail_module
+
+DIM smtpserver = "smtp.gmail.com"
+DIM smtpserverport = 465
+DIM sender = "xxxxxxxx@gmail.com"
+DIM sendpassword = "********"
+
+//初期化用関数。メイン処理の前に必ず呼ぶ事。
+FUNCTION init()
+	CALL ini_module.UWS
+	ini_module.init("relative_timer_gmail.ini")
+	ini_module.set_section("gmail")
+	
+	IF !ini_module.ini_exists() THEN //create ini if not there
+		ini_module.write("smtpserver", "smtp.gmail.com")
+		ini_module.write("smtpserverport", "465")
+		DIM ret
+		REPEAT
+			ret = INPUT("初回のみ：メールアドレス（Gmail）を入力して下さい。<#CR>　　　　　（送受信用に使います）", "@gmail.com")
+			IF (ret = EMPTY) THEN //CANCEL
+				_del_ini()
+				RESULT = FALSE
+				EXIT
+			ENDIF
+			IF (POS("@gmail.com", ret) = 0) THEN
+				MSGBOX("現時点ではGmailしか対応していません。")
+			ENDIF
+		UNTIL (ret <> "") AND (POS("@gmail.com", ret) = LENGTH(ret)-9) AND (POS("@gmail.com", ret) <> 1)
+		ini_module.write("sender", ret)
+		DIM ret2
+		REPEAT
+			ret = INPUT("初回のみ：同メールアドレスのパスワードを入力して下さい。<#CR>　　　　　（送信用に使います）", "", TRUE)
+			IF (ret = EMPTY) THEN //CANCEL
+				_del_ini()
+				RESULT = FALSE
+				EXIT
+			ENDIF
+			ret2 = INPUT("初回のみ：同メールアドレスのパスワードを入力して下さい。<#CR>　　　　　（送信用に使います）（再確認）", "", TRUE)
+			IF (ret2 = EMPTY) THEN //CANCEL
+				_del_ini()
+				RESULT = FALSE
+				EXIT
+			ENDIF
+			IF (ret <> ret2) THEN MSGBOX("パスワードが一致しません。<#CR>もう一度入力して下さい。")
+		UNTIL (ret = ret2) AND (ret <> "")
+		CALL simple_crypto_module.UWS
+		ret = simple_crypto.encrypt(ret)
+		ini_module.write("sendpassword", ret)
+		MSGBOX("INIファイル（relative_timer_gmail.ini）を設定しました。<#CR>（再度設定が必要なら、当該ファイルを削除した上で、もう一度起動して下さい。）")
+	ENDIF
+	
+	smtpserver = ini_module.read("smtpserver")
+	smtpserverport = ini_module.read("smtpserverport")
+	sender = ini_module.read("sender")
+	sendpassword = simple_crypto.decrypt(ini_module.read("sendpassword"))
+	
+	ini_module.release()
+	RESULT = TRUE
+FEND
+
+//refactored out.
+PROCEDURE _del_ini()
+	DIM ret = ini_module.delete_inifile()
+	IF ret <> TRUE THEN
+		MSGBOX("relative_timer_gmail.iniを削除できません。<#CR>手動で削除して下さい。<#CR>-------<#CR>"+ret)
+	ENDIF
+FEND
+
+
+//init()で設定したアドレスから、自分自身にメールを送信する。
+//original: http://nymemo.com/%E6%9C%AA%E5%88%86%E9%A1%9E/1231/
+//edited referencing https://social.msdn.microsoft.com/Forums/office/en-US/7e558cdf-25b9-415a-b6db-7815b0326099/unable-to-send-emails-using-gmail-smtp-server?forum=accessdev
+FUNCTION send(subject, textbody)
+	DIM objEmail = CREATEOLEOBJ("CDO.Message")
+	
+	//内容をセット
+	objEmail.From = sender
+	objEmail.To = sender
+	objEmail.Subject = subject
+	objEmail.Textbody = textbody
+	
+	DIM Schemas = "http://schemas.microsoft.com/cdo/configuration/"
+	objEmail.Configuration.Fields.Item(Schemas + "sendusing") = 2
+	objEmail.Configuration.Fields.Item(Schemas + "smtpserver") = smtpserver
+	objEmail.Configuration.Fields.Item(Schemas + "smtpserverport") = smtpserverport
+	objEmail.Configuration.Fields.Item(Schemas + "smtpauthenticate") = 1
+	objEmail.Configuration.Fields.Item(Schemas + "sendusername") = sender
+	objEmail.Configuration.Fields.Item(Schemas + "sendpassword") = sendpassword
+	objEmail.Configuration.Fields.Item(Schemas + "smtpusessl") = True
+	
+	objEmail.Configuration.Fields.Update
+	
+	TRY
+		objEmail.Send
+	EXCEPT
+		PRINT TRY_ERRLINE +":"+ TRY_ERRMSG
+		RESULT = FALSE
+		EXIT
+	ENDTRY
+	
+	RESULT = TRUE
+FEND
+
+ENDMODULE
