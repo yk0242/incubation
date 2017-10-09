@@ -16,9 +16,6 @@ EXITEXIT //jic
 
 
 
-
-//TODO fix msgs
-
 MODULE schedule
 
 CONST MAX_ITEMS = 256      //最大スケジュール数
