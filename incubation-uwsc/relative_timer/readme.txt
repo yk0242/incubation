@@ -141,9 +141,8 @@ https://github.com/yk0242/incubation/tree/master/incubation-uwsc/relative_timer/
 
 
 ■連絡先
-以下のどちらにでも、要望・不具合報告・感想などを頂けると、作者が喜びます：
- e-mail： yybtcbk@gmail.com
-twitter： https://twitter.com/kitamiya
+以下に要望・不具合報告・感想などを頂けると、作者が喜びます：
+e-mail： yk0242@gmail.com
 
 
 [EOF]
