@@ -211,6 +211,7 @@ function loadPuzzle(editable, puzzleId){
 	document.getElementById("colstxt").value=cols;
 	resetMaintable(editable);
 	document.getElementById("puzId").value=puzzleId;
+	document.getElementById("results").innerHTML = ''; //clear results field on new puzzle load
 	
 	//fill grid
 	for(var y=0; y<rows; y++){
